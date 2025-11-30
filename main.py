@@ -35,3 +35,32 @@ if __name__ == '__main__':
     app.run()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+"""
+# USING the Customer Repo:
+from db.connection import get_connection
+from db.repositories.customers_repo import CustomersRepo
+
+conn = get_connection()
+repo = CustomersRepo(conn)
+
+# Create
+customer = repo.add_customer("John Doe", phone="1234567")
+print(customer)
+
+# Read
+print(repo.get_customer(customer.id))
+
+# Update
+customer.phone = "7654321"
+repo.update_customer(customer)
+
+# List
+print(repo.list_customers())
+
+# Delete
+repo.delete_customer(customer.id)
+
+
+"""
+
