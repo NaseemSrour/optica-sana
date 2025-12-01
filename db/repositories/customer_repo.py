@@ -4,7 +4,7 @@ from db.models import Customer
 from db.utils import dict_from_row, row_to_dataclass
 
 
-class CustomersRepo:
+class CustomerRepo:
 
     def __init__(self, conn):
         self.conn = conn
@@ -23,7 +23,7 @@ class CustomersRepo:
             id=cursor.lastrowid,
             ssn=ssn,
             fname=fname,
-            lanem=lname,
+            lname=lname,
             phone=phone,
             town=town,
             notes=notes
@@ -36,6 +36,15 @@ class CustomersRepo:
         row = self.conn.execute("""
             SELECT * FROM customers WHERE id = ?
         """, (customer_id,)).fetchone()
+
+        if row:
+            return Customer(**dict_from_row(row))
+        return None
+
+    def get_customer_by_ssn(self, customer_ssn) -> Customer:
+        row = self.conn.execute("""
+            SELECT * FROM customers WHERE ssn = ?
+        """, (customer_ssn,)).fetchone()
 
         if row:
             return Customer(**dict_from_row(row))
@@ -65,7 +74,7 @@ class CustomersRepo:
 
         for w in words:
             like = f"%{w}%"
-            conditions.append("(first_name LIKE ? OR last_name LIKE ?)")
+            conditions.append("(fname LIKE ? OR lname LIKE ?)")
             params.extend([like, like])
 
         sql = f"""
@@ -82,9 +91,9 @@ class CustomersRepo:
     def update_customer(self, customer: Customer) -> bool:
         self.conn.execute("""
             UPDATE customers
-            SET name = ?, phone = ?, email = ?, notes = ?
+            SET ssn = ?, fname = ?, lname = ?, phone = ?, town = ?, notes = ?
             WHERE id = ?
-        """, (customer.name, customer.phone, customer.email, customer.notes, customer.id))
+        """, (customer.ssn, customer.fname, customer.lname, customer.phone, customer.town, customer.notes, customer.id))
 
         self.conn.commit()
         return True

@@ -2,39 +2,48 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from db.connection import get_connection
+from db.models import Customer
+from db.repositories.customer_repo import CustomerRepo
 
-from textual.app import App, ComposeResult
-from textual.widgets import Footer, Header
+from db.bootstrap import initialize_database
+from services.customer_service import CustomerService
+
+DB_PATH = "data/app.db"
+
+def build_container():
+    """
+    Dependency Injection container.
+    Creates reusable objects and returns them.
+    """
+    repo = CustomerRepo(DB_PATH)
+    service = CustomerService(repo)
+    return service
+
+def main():
+    initialize_database()  # ← Ensures DB exists before app runs
+    customer_service = build_container()
+
+    # Example usage:
+    new_id = customer_service.add_customer(
+        first_name="Naseem",
+        last_name="Srour",
+        phone="050-1234567",
+        email="test@example.com"
+    )
+    print("Created new customer with ID:", new_id)
+
+    print(customer_service.search_customers("Naseem"))
 
 
-class StopwatchApp(App):
-    """A Textual app to manage stopwatches."""
+if __name__ == "__main__":
+    connection = get_connection()
+    repo = CustomerRepo(connection)
 
-    BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]
-
-    def compose(self) -> ComposeResult:
-        """Create child widgets for the app."""
-        yield Header()
-        yield Footer()
-
-    def action_toggle_dark(self) -> None:
-        """An action to toggle dark mode."""
-        self.theme = (
-            "textual-dark" if self.theme == "textual-light" else "textual-light"
-        )
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    app = StopwatchApp()
-    app.run()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # Create
+    customer = repo.delete_customer(6)
+    print(customer)
+    connection.close()
 
 """
 # USING the Customer Repo:

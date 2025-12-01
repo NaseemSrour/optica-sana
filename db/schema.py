@@ -1,3 +1,4 @@
+# SQL for initial creation
 import connection as db
 
 
@@ -8,7 +9,7 @@ def create_tables(conn):
             ssn INTEGER NOT NULL,
             fname TEXT NOT NULL,
             lname TEXT NOT NULL,
-            phone TEXT NOT NULL,
+            phone TEXT,
             town TEXT,
             notes TEXT
         )
