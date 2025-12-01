@@ -46,7 +46,9 @@ project/
    All business rules live in the application layer — independent of Textual.
 
 3. **UI as a thin layer**
+   
    The UI doesn't need to know anything about the storage layer, it only uses the API provided by the services - so that in the future, any UI can be implemented and incorporated, not just Textual.
+
    The Textual interface handles:
    - keyboard navigation  
    - user feedback  
