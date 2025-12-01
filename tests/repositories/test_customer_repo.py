@@ -2,7 +2,7 @@ import sqlite3
 import pytest
 
 from db.repositories.customer_repo import CustomerRepo
-from db.models import Customer
+
 
 # -----------------------------------
 # Helpers
