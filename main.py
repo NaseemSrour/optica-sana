@@ -9,15 +9,16 @@ from db.repositories.customer_repo import CustomerRepo
 from db.bootstrap import initialize_database
 from services.customer_service import CustomerService
 
-DB_PATH = "data/app.db"
+DB_PATH = "database.db"
 
 def build_container():
     """
     Dependency Injection container.
     Creates reusable objects and returns them.
     """
-    repo = CustomerRepo(DB_PATH)
-    service = CustomerService(repo)
+    conn = get_connection()
+    cus_repo = CustomerRepo(conn)
+    service = CustomerService(cus_repo)
     return service
 
 def main():
@@ -25,25 +26,15 @@ def main():
     customer_service = build_container()
 
     # Example usage:
-    new_id = customer_service.add_customer(
-        first_name="Naseem",
-        last_name="Srour",
-        phone="050-1234567",
-        email="test@example.com"
-    )
-    print("Created new customer with ID:", new_id)
-
-    print(customer_service.search_customers("Naseem"))
+    customer_result = customer_service.get_customer_by_ssn("205350457")
+    if(customer_result is None):
+        print("No customer fonud with ID: 205350457")
+    else:
+        print("Retrieved customer with ID 205350547: ", customer_result)
 
 
 if __name__ == "__main__":
-    connection = get_connection()
-    repo = CustomerRepo(connection)
-
-    # Create
-    customer = repo.delete_customer(6)
-    print(customer)
-    connection.close()
+    main()
 
 """
 # USING the Customer Repo:
