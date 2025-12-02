@@ -41,6 +41,7 @@ class CustomerService:
     def get_customer(self, customer_id: int):
         if not customer_id:
             raise ValueError("Customer internal ID must be provided!")
+
         if not str(customer_id).isdigit():
             raise ValueError("Customer internal ID must be number only!")
 

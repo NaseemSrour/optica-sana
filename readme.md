@@ -45,14 +45,17 @@ project/
 2. **Logic before visuals**  
    All business rules live in the application layer — independent of Textual.
 
-3. **UI as a thin layer**  
+3. **UI as a thin layer**
+   
+   The UI doesn't need to know anything about the storage layer, it only uses the API provided by the services - so that in the future, any UI can be implemented and incorporated, not just Textual.
+
    The Textual interface handles:
    - keyboard navigation  
    - user feedback  
    - real-time input validation  
    - sending clean data to the core logic  
 
-4. **Multi-layer validation**
+5. **Multi-layer validation**
    - UI: user feedback & field dependencies  
    - Logic: business/value rules  
    - DB: constraints & integrity  
