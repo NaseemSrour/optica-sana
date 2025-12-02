@@ -26,8 +26,8 @@ class RefractionRepo:
             test.customer_id,
             datetime_to_text(test.exam_date),
             test.examiner,
-            test.od_sphere, test.od_cylinder, test.od_axis, test.od_add, test.od_va,
-            test.os_sphere, test.os_cylinder, test.os_axis, test.os_add, test.os_va,
+            test.r_sphere, test.r_cylinder, test.r_axis, test.r_add, test.r_va,
+            test.l_sphere, test.l_cylinder, test.l_axis, test.l_add, test.l_va,
             test.pupil_distance, test.diagnosis, test.notes
         ))
 
@@ -51,6 +51,17 @@ class RefractionRepo:
     # READ (all by customer)
     # -----------------------------
     def list_tests_for_customer(self, customer_id: int):
+        # Repo handles database-level risks (invalid types, corrupted rows)
+        # While the Service handles user input and business rules before calling repo
+        if customer_id is None:
+            raise ValueError("customer_id must not be None")
+
+        if not isinstance(customer_id, int):
+            raise TypeError("customer_id must be an integer")
+
+        if customer_id <= 0:
+            raise ValueError("customer_id must be a positive integer")
+
         rows = self.conn.execute("""
             SELECT * FROM refraction_tests
             WHERE customer_id = ?
@@ -60,7 +71,11 @@ class RefractionRepo:
         results = []
         for r in rows:
             data = dict_from_row(r)
-            data["exam_date"] = text_to_datetime(data["exam_date"])
+            if not (data["exam_date"] is None):
+                try:
+                    data["exam_date"] = text_to_datetime(data["exam_date"])
+                except Exception:
+                    pass  # do nothing
             results.append(RefractionTest(**data))
 
         return results
@@ -72,16 +87,16 @@ class RefractionRepo:
         self.conn.execute("""
             UPDATE refraction_tests
             SET customer_id=?, exam_date=?, examiner=?,
-                od_sphere=?, od_cylinder=?, od_axis=?, od_add=?, od_va=?,
-                os_sphere=?, os_cylinder=?, os_axis=?, os_add=?, os_va=?,
+                r_sphere=?, r_cylinder=?, r_axis=?, r_add=?, r_va=?,
+                l_sphere=?, l_cylinder=?, l_axis=?, l_add=?, l_va=?,
                 pupil_distance=?, diagnosis=?, notes=?
             WHERE id=?
         """, (
             test.customer_id,
             datetime_to_text(test.exam_date),
             test.examiner,
-            test.od_sphere, test.od_cylinder, test.od_axis, test.od_add, test.od_va,
-            test.os_sphere, test.os_cylinder, test.os_axis, test.os_add, test.os_va,
+            test.r_sphere, test.r_cylinder, test.r_axis, test.r_add, test.r_va,
+            test.l_sphere, test.l_cylinder, test.l_axis, test.l_add, test.l_va,
             test.pupil_distance, test.diagnosis, test.notes,
             test.id
         ))
