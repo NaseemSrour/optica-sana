@@ -12,7 +12,8 @@ class RefractionRepo:
     # -----------------------------
     # CREATE
     # -----------------------------
-    def add_test(self, test: RefractionTest) -> RefractionTest:
+    def add_test(self, test: RefractionTest):
+        """Receives an object, not a dict, to ensure complete objects & correct field naming."""
         # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
         cursor = self.conn.execute(""" 
             INSERT INTO refraction_tests (
@@ -84,6 +85,9 @@ class RefractionRepo:
     # UPDATE
     # -----------------------------
     def update_test(self, test: RefractionTest) -> bool:
+        """Receives an object, not a dict, to ensure complete objects & correct field naming."""
+        # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
+
         self.conn.execute("""
             UPDATE refraction_tests
             SET customer_id=?, exam_date=?, examiner=?,
@@ -93,7 +97,7 @@ class RefractionRepo:
             WHERE id=?
         """, (
             test.customer_id,
-            datetime_to_text(test.exam_date),
+            test.exam_date,
             test.examiner,
             test.r_sphere, test.r_cylinder, test.r_axis, test.r_add, test.r_va,
             test.l_sphere, test.l_cylinder, test.l_axis, test.l_add, test.l_va,
@@ -108,6 +112,7 @@ class RefractionRepo:
     # DELETE
     # -----------------------------
     def delete_test(self, test_id: int) -> bool:
+        # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
         self.conn.execute("""
             DELETE FROM refraction_tests WHERE id = ?
         """, (test_id,))

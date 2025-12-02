@@ -3,7 +3,7 @@ from db.repositories.customer_repo import CustomerRepo
 from db.repositories.refraction_repo import RefractionRepo
 from datetime import datetime
 
-from db.utils import text_to_datetime
+from db.utils import *
 
 
 class CustomerService:
@@ -86,12 +86,12 @@ class CustomerService:
             return None
 
         # Convert exam_date string → datetime
-        test_data["exam_date"] = text_to_datetime(test_data["exam_date"])
+        test_data["exam_date"] = str_to_date(test_data["exam_date"]) # convert String '27/1/2025' --> datetime object -- and in the Ref repo: --> the ISO format of that object, as a String.
 
         # Create dataclass
         ref_test = RefractionTest(**test_data)
 
-        return self.refraction_repo.add_test(ref_test)
+        return self.refraction_repo.add_test(ref_test) # is passed an object, not a dict, to ensure complete and correct objects.
 
     def get_refraction_history(self, customer_id):
         # Returns a list of RefractionTest
@@ -117,11 +117,15 @@ class CustomerService:
             return None
 
         # Convert exam_date string → datetime
-        updated_test_data["exam_date"] = text_to_datetime(updated_test_data["exam_date"])
+        updated_test_data["exam_date"] = str_to_date(updated_test_data["exam_date"])
         # Create dataclass
-        ref_test = RefractionTest(**updated_test_data)
+        ref_test = RefractionTest(**updated_test_data)  # is passed an object, not a dict, to ensure complete and correct objects.
 
         return self.refraction_repo.update_test(ref_test)
+
+    def delete_refraction_test(self, test_id: int):
+        return self.refraction_repo.delete_test(test_id)  # DB doesn't fail if the test_id doesn't exist.
+
 
     def validate_input_refraction_test(self, customer_id, test_data: dict):
         # --- Step 1: Validate customer_id ---
@@ -142,7 +146,7 @@ class CustomerService:
 
         # --- Step 3: Validate exam_date (must be YYYY-MM-DD) ---
         try:
-            datetime.strptime(test_data["exam_date"], "%Y-%m-%d")
+            str_to_date(test_data["exam_date"])
         except ValueError:
             print("exam_date must be in format YYYY-MM-DD")
             return False
