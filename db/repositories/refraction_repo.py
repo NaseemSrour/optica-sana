@@ -1,6 +1,8 @@
+import sqlite3
 from typing import Optional
 
 from db.models import RefractionTest
+from db.sql_queries import *
 from db.utils import *
 
 
@@ -15,21 +17,14 @@ class RefractionRepo:
     def add_test(self, test: RefractionTest):
         """Receives an object, not a dict, to ensure complete objects & correct field naming."""
         # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
-        cursor = self.conn.execute(""" 
-            INSERT INTO refraction_tests (
-                customer_id, exam_date, examiner,
-                r_sphere, r_cylinder, r_axis, r_add, r_va,
-                l_sphere, l_cylinder, l_axis, l_add, l_va,
-                pupil_distance, diagnosis, notes
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
+        cursor = self.conn.execute(ADD_REFRACTION_TEST_QUERY, (
             test.customer_id,
             datetime_to_text(test.exam_date),
             test.examiner,
-            test.r_sphere, test.r_cylinder, test.r_axis, test.r_add, test.r_va,
-            test.l_sphere, test.l_cylinder, test.l_axis, test.l_add, test.l_va,
-            test.pupil_distance, test.diagnosis, test.notes
+            test.r_fv_numerator, test.r_fv_denominator, test.r_sphere, test.r_cylinder, test.r_axis, test.r_prism, test.r_base, test.r_va, test.r_add_read, test.r_add_int, test.r_add_bif, test.r_add_mul, test.r_high,
+            test.l_fv_numerator, test.l_fv_denominator, test.l_sphere, test.l_cylinder, test.l_axis, test.l_prism, test.l_base, test.l_va, test.l_add_read, test.l_add_int, test.l_add_bif, test.l_add_mul, test.l_high,
+            test.pupil_distance, test.dominant_eye, test.iop, test.glasses_role, test.lenses_material, test.lenses_diameter, test.segment_diameter, test.lenses_manufacturer, test.lenses_color, test.catalog_num, test.frame_manufacturer, test.frame_supplier, test.frame_model, test.frame_size, test.frame_bar_length, test.frame_color,
+            test.diagnosis, test.notes
         ))
 
         self.conn.commit()
@@ -88,20 +83,16 @@ class RefractionRepo:
         """Receives an object, not a dict, to ensure complete objects & correct field naming."""
         # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
 
-        self.conn.execute("""
-            UPDATE refraction_tests
-            SET customer_id=?, exam_date=?, examiner=?,
-                r_sphere=?, r_cylinder=?, r_axis=?, r_add=?, r_va=?,
-                l_sphere=?, l_cylinder=?, l_axis=?, l_add=?, l_va=?,
-                pupil_distance=?, diagnosis=?, notes=?
-            WHERE id=?
-        """, (
+        self.conn.execute(UPDATE_REFRACTION_TEST_QUERY, (
             test.customer_id,
-            test.exam_date,
+            datetime_to_text(test.exam_date),
             test.examiner,
-            test.r_sphere, test.r_cylinder, test.r_axis, test.r_add, test.r_va,
-            test.l_sphere, test.l_cylinder, test.l_axis, test.l_add, test.l_va,
-            test.pupil_distance, test.diagnosis, test.notes,
+            test.r_fv_numerator, test.r_fv_denominator, test.r_sphere, test.r_cylinder, test.r_axis, test.r_prism,
+            test.r_base, test.r_va, test.r_add_read, test.r_add_int, test.r_add_bif, test.r_add_mul, test.r_high,
+            test.l_fv_numerator, test.l_fv_denominator, test.l_sphere, test.l_cylinder, test.l_axis, test.l_prism,
+            test.l_base, test.l_va, test.l_add_read, test.l_add_int, test.l_add_bif, test.l_add_mul, test.l_high,
+            test.pupil_distance, test.dominant_eye, test.iop, test.glasses_role, test.lenses_material, test.lenses_diameter, test.segment_diameter, test.lenses_manufacturer, test.lenses_color, test.catalog_num, test.frame_manufacturer, test.frame_supplier, test.frame_model, test.frame_size, test.frame_bar_length, test.frame_color,
+            test.diagnosis, test.notes,
             test.id
         ))
 

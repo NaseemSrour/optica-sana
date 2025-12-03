@@ -39,66 +39,6 @@ def main():
     else:
         print("Retrieved customer with ID 205350547: ", customer_result)
 
-    ref_test = RefractionTest(
-        id=None,
-        customer_id=1,
-        exam_date=datetime(2025, 1, 1),
-        examiner="Samer",
-
-        r_sphere=-1.25,
-        r_cylinder=-0.75,
-        r_axis=180,
-        r_add=1.25,
-        r_va="20/20",
-
-        l_sphere=-1.00,
-        l_cylinder=-0.50,
-        l_axis=170,
-        l_add=1.00,
-        l_va="20/25",
-
-        pupil_distance=64,
-        diagnosis="Myopia",
-        notes="Patient reported headaches."
-    )
-
-    ref_test_dict = asdict(ref_test)  # datetime objects stay objects
-    ref_test_dict["exam_date"] = date_to_str(ref_test_dict["exam_date"])
-    print("The input exam date: " + ref_test_dict["exam_date"])
-    print()
-
-    # customer_service.add_refraction_test(1, ref_test_dict)
-
-
-    updated_ref_test = RefractionTest(
-        id=3,
-        customer_id=1,
-        exam_date=datetime(2025, 11, 27),
-        examiner="Samer",
-
-        r_sphere=-1.25,
-        r_cylinder=-0.75,
-        r_axis=180,
-        r_add=1.25,
-        r_va="20/20",
-
-        l_sphere=-1.00,
-        l_cylinder=-0.50,
-        l_axis=170,
-        l_add=1.00,
-        l_va="20/25",
-
-        pupil_distance=64,
-        diagnosis="Myopia",
-        notes="Patient reported headaches."
-    )
-
-    updated_test_dict = asdict(updated_ref_test)  # datetime objects stay objects
-    updated_test_dict["exam_date"] = date_to_str(updated_test_dict["exam_date"])
-
-    # customer_service.update_refraction_test(1, updated_test_dict)
-    # print(customer_service.delete_refraction_test(2))
-
 
 if __name__ == "__main__":
     main()
@@ -130,3 +70,145 @@ repo.delete_customer(customer.id)
 
 
 """
+
+# -----------------------------
+# MY OWN MANUAL TESTS:
+# Put them in the main func above with the initialization of the DB and repos
+# -----------------------------
+
+
+def add_ref_test_and_update_it():
+    ref_test = RefractionTest(
+        id=999,
+        customer_id=5,
+
+        # --- Exam metadata ---
+        exam_date=datetime(2025, 5, 9, 14, 30),
+        examiner="Sanaa",
+
+        # --- Right Eye (OD) ---
+        r_fv_numerator=6,
+        r_fv_denominator=9,
+        r_sphere=-2.25,
+        r_cylinder=-1.00,
+        r_axis=170,
+        r_prism=0.5,
+        r_base="IN",
+        r_va="6/6",
+        r_add_read=1.25,
+        r_add_int=0.75,
+        r_add_bif=1.50,
+        r_add_mul=1.25,
+        r_high=None,  # Unused or unknown field
+
+        # --- Left Eye (OS) ---
+        l_fv_numerator=6,
+        l_fv_denominator=12,
+        l_sphere=-1.75,
+        l_cylinder=-0.50,
+        l_axis=10,
+        l_prism=0.25,
+        l_base="OUT",
+        l_va="6/7.5",
+        l_add_read=1.25,
+        l_add_int=0.75,
+        l_add_bif=1.50,
+        l_add_mul=1.25,
+        l_high=None,
+
+        # --- Symptoms / Notes ---
+        pupil_distance=63.5,  # PD (usually 54–74mm)
+        dominant_eye="R",
+        iop="R: 15, L: 16 mmHg",  # Intraocular pressure
+        glasses_role="Distance",
+        lenses_material="Polycarbonate",
+        lenses_diameter=70.0,  # mm
+        segment_diameter=28.0,  # mm
+        lenses_manufacturer="Essilor",
+        lenses_color="Clear",
+        catalog_num="ESL-12345",
+
+        frame_manufacturer="Ray-Ban",
+        frame_supplier="Optica Jerusalem",
+        frame_model="RB3025 Aviator",
+        frame_size="58-14",
+        frame_bar_length="135",
+        frame_color="Gold",
+
+        diagnosis="Myopia with Astigmatism",
+        notes="Patient reports mild eye strain after long computer use."
+    )
+
+    ref_test_dict = asdict(ref_test)  # datetime objects stay objects
+    ref_test_dict["exam_date"] = date_to_str(ref_test_dict["exam_date"])
+    print("The input exam date: " + ref_test_dict["exam_date"])
+    print()
+
+    # customer_service.add_refraction_test(1, ref_test_dict)
+
+    updated_ref_test = RefractionTest(
+        id=1,
+        customer_id=5,
+
+        # --- Exam metadata ---
+        exam_date=datetime(2025, 5, 9, 14, 30),
+        examiner="Sanaa",
+
+        # --- Right Eye (OD) ---
+        r_fv_numerator=6,
+        r_fv_denominator=9,
+        r_sphere=-2.0,
+        r_cylinder=-1.00,
+        r_axis=170,
+        r_prism=0.5,
+        r_base="IN",
+        r_va="6/6",
+        r_add_read=1.25,
+        r_add_int=0.75,
+        r_add_bif=1.50,
+        r_add_mul=1.25,
+        r_high=None,  # Unused or unknown field
+
+        # --- Left Eye (OS) ---
+        l_fv_numerator = 6,
+        l_fv_denominator = 12,
+        l_sphere = -1.75,
+        l_cylinder = -0.50,
+        l_axis= 10,
+        l_prism= 0.25,
+        l_base="OUT",
+        l_va="6/7.5",
+        l_add_read=1.25,
+        l_add_int=0.75,
+        l_add_bif=1.50,
+        l_add_mul=1.25,
+        l_high=None,
+
+        # --- Symptoms / Notes ---
+        pupil_distance=63.5,  # PD (usually 54–74mm)
+        dominant_eye="R",
+        iop="R: 15, L: 16 mmHg",  # Intraocular pressure
+        glasses_role="Distance",
+        lenses_material="Polycarbonate",
+        lenses_diameter=70.0,  # mm
+        segment_diameter=28.0,  # mm
+        lenses_manufacturer="Essilor",
+        lenses_color="Clear",
+        catalog_num="ESL-12345",
+
+        frame_manufacturer="Ray-Ban",
+        frame_supplier="Optica Jerusalem",
+        frame_model="RB3025 Aviator",
+        frame_size="58-14",
+        frame_bar_length="135",
+        frame_color="Gold",
+
+        diagnosis="Myopia with Astigmatism",
+        notes="Patient reports mild eye strain after long computer use."
+    )
+
+    updated_test_dict = asdict(updated_ref_test)  # datetime objects stay objects
+    updated_test_dict["exam_date"] = date_to_str(updated_test_dict["exam_date"])
+
+    # customer_service.update_refraction_test(updated_test_dict["id"], updated_test_dict)
+
