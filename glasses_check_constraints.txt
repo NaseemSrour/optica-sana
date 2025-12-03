@@ -1,0 +1,73 @@
+Glasses Check constraints & validations:
+
+1. FV:
+	numerator/denominator: numerator - integer, values[6, 20]
+			       denominator: integer, values[3, 200]
+
+2. Sph. (Sphere):
+	decimal, values[-20.00, 20.00] (most prescriptions -12 to 8)
+		with steps in 0.25
+		(e3ni: (value * 100) % 25 == 0)
+
+3. Cyl. (Cylindrical Power):
+	Decimal in steps of 0.25.
+	values [-6, 6]
+	If values is 0, or "-" (null) treat as no astigmatism.
+
+4. Ax. (Axis):
+	Required ONLY IF Cyl. != 0
+	Integer, values [0, 180] (no decimal)
+	e3ni eza fe Cyl, mjbor ekon fe Axis.
+	eza fsh Cyl, me3nah Axis must equal Null/Empty
+
+	IF cyl != 0 THEN axis MUST be between 0 and 180
+	IF cyl == 0 THEN axis MUST be NULL / empty / dot
+
+5. Prism:
+	Optional
+	Decimal, values [0, 10]
+	Steps of 0.25
+	If prism is null --> Base must be null/empty as well.
+
+
+6. Base:
+	String
+	Value ∈ {"BU", "BD", "BI", "BO"} (drop-down list?)
+	Required only if Prism > 0
+	Can Base be some value while Prism = 0/null ???
+
+	IF prism > 0 THEN base MUST be in {BU, BD, BI, BO}
+	IF prism == 0 OR null THEN base MUST be null
+
+
+7. VA: ?????????
+
+8. ADDITIONS:
+	Read, Int. (intermediate), Bif. (bifocal), Mul. (multifocal):
+	Decimal, steps of 0.25.
+	Values[0.50, 3.50] (only positive)
+
+	And usually, but not ncesessarily:
+	IF age < ~40 THEN Add. fields should be NULL
+	
+	Usually only one of Read / Bifocal / Multifocal is used
+	But a user may enter multiple; not strictly invalid.
+
+9. High: ?????? nfs el Additions above ???
+
+10. PD (Pupillary Distance):
+	Decimal, values [50, 75]mm.
+	Better to split as 2 values:
+	PD_near, PD_distance
+
+	
+
+
+
+
+
+
+
+
+
+
