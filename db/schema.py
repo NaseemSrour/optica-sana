@@ -16,8 +16,8 @@ def create_tables(conn):
     """)
     conn.commit()
 
-    REFRACTION_TEST_SCHEMA_SQL = """
-    CREATE TABLE IF NOT EXISTS refraction_tests (
+    GLASSES_TEST_SCHEMA_SQL = """
+    CREATE TABLE IF NOT EXISTS glasses_tests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_id INTEGER NOT NULL,
     exam_date TEXT NOT NULL,
@@ -70,10 +70,10 @@ def create_tables(conn):
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
     );
     """
-    conn.execute(REFRACTION_TEST_SCHEMA_SQL)
+    conn.execute(GLASSES_TEST_SCHEMA_SQL)
     conn.commit()
 
 
 con = db.get_connection()
 create_tables(con)
-print("Created customers table successfully!")
+print("Created customers & glasses tables successfully!")

@@ -1,6 +1,6 @@
-from db.models import Customer, RefractionTest
+from db.models import Customer, GlassesTest
 from db.repositories.customer_repo import CustomerRepo
-from db.repositories.refraction_repo import RefractionRepo
+from db.repositories.glasses_repo import GlassesRepo
 from datetime import datetime
 
 from db.utils import *
@@ -8,9 +8,9 @@ from db.utils import *
 
 class CustomerService:
 
-    def __init__(self, customer_repo: CustomerRepo, refraction_repo: RefractionRepo):
+    def __init__(self, customer_repo: CustomerRepo, glasses_repo: GlassesRepo):
         self.cus_repo = customer_repo
-        self.refraction_repo = refraction_repo
+        self.glasses_repo = glasses_repo
 
     def add_customer(self, ssn: str, first_name: str, last_name: str, phone: str = None, town: str = None, notes: str = None):
         """
@@ -75,14 +75,14 @@ class CustomerService:
         self.cus_repo.delete_customer(customer_id)
 
     # -----------------------------------------
-    # 'Refraction Test' Operations
+    # 'Glasses Test' Operations
     # -----------------------------------------
 
-    def add_refraction_test(self, customer_id, test_data: dict):
-        # Adds and returns a newly-created RefractionTest object
+    def add_glasses_test(self, customer_id, test_data: dict):
+        # Adds and returns a newly-created GlassesTest object
 
         # Validate fields:
-        valid = self.validate_input_refraction_test(customer_id, test_data)
+        valid = self.validate_input_glasses_test(customer_id, test_data)
         if not valid:
             return None
 
@@ -90,48 +90,48 @@ class CustomerService:
         test_data["exam_date"] = str_to_date(test_data["exam_date"]) # convert String '27/1/2025' --> datetime object -- and in the Ref repo: --> the ISO format of that object, as a String.
 
         # Create dataclass
-        ref_test = RefractionTest(**test_data)
+        ref_test = GlassesTest(**test_data)
 
-        return self.refraction_repo.add_test(ref_test) # is passed an object, not a dict, to ensure complete and correct objects.
+        return self.glasses_repo.add_test(ref_test) # is passed an object, not a dict, to ensure complete and correct objects.
 
-    def get_refraction_history(self, customer_id):
-        # Returns a list of RefractionTest
+    def get_glasses_history(self, customer_id):
+        # Returns a list of GlassesTest
         if not self.validate_customer_exists(customer_id):
             return None
 
-        return self.refraction_repo.list_tests_for_customer(customer_id)
+        return self.glasses_repo.list_tests_for_customer(customer_id)
 
-    def get_latest_refraction(self, customer_id) -> RefractionTest:
+    def get_latest_glasses(self, customer_id) -> GlassesTest:
         if not self.validate_customer_exists(customer_id):
             return None
 
-        history = self.refraction_repo.list_tests_for_customer(customer_id)
+        history = self.glasses_repo.list_tests_for_customer(customer_id)
         return history[0] if history else None
 
-    def update_refraction_test(self, customer_id, updated_test_data: dict):
+    def update_glasses_test(self, customer_id, updated_test_data: dict):
         """Returns a boolean"""
 
         if not self.validate_customer_exists(customer_id):
             return None
-        valid = self.validate_input_refraction_test(customer_id, updated_test_data)
+        valid = self.validate_input_glasses_test(customer_id, updated_test_data)
         if not valid:
             return None
 
         # Convert exam_date string → datetime
         updated_test_data["exam_date"] = str_to_date(updated_test_data["exam_date"])
         # Create dataclass
-        ref_test = RefractionTest(**updated_test_data)  # is passed an object, not a dict, to ensure complete and correct objects.
+        ref_test = GlassesTest(**updated_test_data)  # is passed an object, not a dict, to ensure complete and correct objects.
 
-        return self.refraction_repo.update_test(ref_test)
+        return self.glasses_repo.update_test(ref_test)
 
-    def delete_refraction_test(self, test_id: int):
-        return self.refraction_repo.delete_test(test_id)  # DB doesn't fail if the test_id doesn't exist.
+    def delete_glasses_test(self, test_id: int):
+        return self.glasses_repo.delete_test(test_id)  # DB doesn't fail if the test_id doesn't exist.
 
     # -----------------------------------------
     # Validation helper functions:
     # -----------------------------------------
 
-    def validate_input_refraction_test(self, customer_id, test_data: dict):
+    def validate_input_glasses_test(self, customer_id, test_data: dict):
         # --- Step 1: Validate customer_id ---
         if not isinstance(customer_id, int) or customer_id <= 0:
             print("Invalid customer ID")

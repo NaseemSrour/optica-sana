@@ -19,9 +19,9 @@ class Customer:
         return Customer(**dict(row))
 
 @dataclass
-class RefractionTest:
+class GlassesTest:
     """
-    Represents a single refraction exam for a given customer (patient).
+    Represents a single glasses exam for a given customer (patient).
     """
 
     id: int
@@ -29,7 +29,7 @@ class RefractionTest:
 
     # --- Exam metadata ---
     exam_date: datetime    # When the test was performed
-    examiner: Optional[str] = None  # Who performed the refraction
+    examiner: Optional[str] = None  # Who performed the glasses test
 
     # --- Right Eye (OD) values ---
     r_fv_numerator: Optional[int] = None
@@ -87,5 +87,5 @@ class RefractionTest:
     def from_row(row):
         if row is None:
             return None
-        return RefractionTest(**dict(row))
+        return GlassesTest(**dict(row))
 

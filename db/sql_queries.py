@@ -1,4 +1,4 @@
-ADD_REFRACTION_TEST_QUERY = """            INSERT INTO refraction_tests (
+ADD_GLASSES_TEST_QUERY = """            INSERT INTO glasses_tests (
                 customer_id, exam_date, examiner,
                 r_fv_numerator, r_fv_denominator,
                 r_sphere, r_cylinder, r_axis, r_prism, r_base, r_va, r_add_read, r_add_int, r_add_bif, r_add_mul, r_high,
@@ -8,8 +8,8 @@ ADD_REFRACTION_TEST_QUERY = """            INSERT INTO refraction_tests (
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
-orig_ADD_REFRACTION_TEST_QUERY = """ 
-            INSERT INTO refraction_tests (
+orig_ADD_GLASSES_TEST_QUERY = """ 
+            INSERT INTO glasses_tests (
                 customer_id, exam_date, examiner,
                 r_sphere, r_cylinder, r_axis, r_add, r_va,
                 l_sphere, l_cylinder, l_axis, l_add, l_va,
@@ -18,8 +18,8 @@ orig_ADD_REFRACTION_TEST_QUERY = """
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
-UPDATE_REFRACTION_TEST_QUERY = """
-            UPDATE refraction_tests
+UPDATE_GLASSES_TEST_QUERY = """
+            UPDATE glasses_tests
             SET customer_id=?, exam_date=?, examiner=?,
                 r_fv_numerator=?, r_fv_denominator=?,
                 r_sphere=?, r_cylinder=?, r_axis=?, r_prism=?, r_base=?, r_va=?, r_add_read=?, r_add_int=?, r_add_bif=?, r_add_mul=?, r_high=?,
@@ -29,8 +29,8 @@ UPDATE_REFRACTION_TEST_QUERY = """
             WHERE id=?
         """
 
-orig_UPDATE_REFRACTION_TEST_QUERY = """
-            UPDATE refraction_tests
+orig_UPDATE_GLASSES_TEST_QUERY = """
+            UPDATE glasses_tests
             SET customer_id=?, exam_date=?, examiner=?,
                 r_sphere=?, r_cylinder=?, r_axis=?, r_add=?, r_va=?,
                 l_sphere=?, l_cylinder=?, l_axis=?, l_add=?, l_va=?,

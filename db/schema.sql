@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS customers (
             notes TEXT
 );
 
-CREATE TABLE IF NOT EXISTS refraction_tests (
+CREATE TABLE IF NOT EXISTS glasses_tests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_id INTEGER NOT NULL,
     exam_date TEXT NOT NULL,

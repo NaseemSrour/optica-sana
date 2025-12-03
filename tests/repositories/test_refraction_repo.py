@@ -2,10 +2,10 @@ import sqlite3
 import pytest
 from datetime import datetime
 
-from db.models import RefractionTest
+from db.models import GlassesTest
 from db.utils import datetime_to_text, text_to_datetime
 
-from db.repositories.refraction_repo import RefractionRepo
+from db.repositories.glasses_repo import GlassesRepo
 
 
 # ------------------------------------------------------
@@ -16,7 +16,7 @@ def setup_in_memory_db():
     conn.row_factory = sqlite3.Row
 
     conn.execute("""
-CREATE TABLE IF NOT EXISTS refraction_tests (
+CREATE TABLE IF NOT EXISTS glasses_tests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_id INTEGER NOT NULL,
     exam_date TEXT NOT NULL,
@@ -75,16 +75,16 @@ CREATE TABLE IF NOT EXISTS refraction_tests (
 
 
 # ------------------------------------------------------
-# Helper: sample refraction test object
+# Helper: sample glasses test object
 # ------------------------------------------------------
 def sample_test(customer_id=1):
-    return RefractionTest(
+    return GlassesTest(
         id=None,
-        customer_id=5,
+        customer_id=customer_id,
 
         # --- Exam metadata ---
         exam_date=datetime(2025, 5, 9, 14, 30),
-        examiner="Sanaa",
+        examiner="Dr. Smith",
 
         # --- Right Eye (OD) ---
         r_fv_numerator=6,
@@ -145,7 +145,7 @@ def sample_test(customer_id=1):
 # ------------------------------------------------------
 def test_add_test():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     test = sample_test()
     saved = repo.add_test(test)
@@ -154,11 +154,11 @@ def test_add_test():
     assert saved.customer_id == 1
 
     # Verify row in DB
-    row = conn.execute("SELECT * FROM refraction_tests WHERE id=1").fetchone()
+    row = conn.execute("SELECT * FROM glasses_tests WHERE id=1").fetchone()
     assert row is not None
     assert row["customer_id"] == 1
     assert row["examiner"] == "Dr. Smith"
-    assert row["r_sphere"] == -1.25
+    assert row["r_sphere"] == -2.25
 
 
 # ------------------------------------------------------
@@ -166,7 +166,7 @@ def test_add_test():
 # ------------------------------------------------------
 def test_get_test():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     inserted = repo.add_test(sample_test())
     retrieved = repo.get_test(inserted.id)
@@ -181,7 +181,7 @@ def test_get_test():
 # ------------------------------------------------------
 def test_get_test_not_found():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     assert repo.get_test(999) is None
 
@@ -191,7 +191,7 @@ def test_get_test_not_found():
 # ------------------------------------------------------
 def test_list_tests_for_customer_ordering():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     # Insert tests with different dates
     t1 = sample_test()
@@ -216,7 +216,7 @@ def test_list_tests_for_customer_ordering():
 # ------------------------------------------------------
 def test_list_tests_for_customer_invalid_none():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     with pytest.raises(ValueError):
         repo.list_tests_for_customer(None)
@@ -224,7 +224,7 @@ def test_list_tests_for_customer_invalid_none():
 
 def test_list_tests_for_customer_invalid_type():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     with pytest.raises(TypeError):
         repo.list_tests_for_customer("abc")
@@ -232,7 +232,7 @@ def test_list_tests_for_customer_invalid_type():
 
 def test_list_tests_for_customer_invalid_negative():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     with pytest.raises(ValueError):
         repo.list_tests_for_customer(-5)
@@ -243,11 +243,11 @@ def test_list_tests_for_customer_invalid_negative():
 # ------------------------------------------------------
 def test_list_tests_customer_corrupted_date():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     # Insert row with invalid date
     conn.execute("""
-        INSERT INTO refraction_tests (
+        INSERT INTO glasses_tests (
             customer_id, exam_date
         ) VALUES (?, ?)
     """, (1, "BAD_DATE_FORMAT"))
@@ -265,7 +265,7 @@ def test_list_tests_customer_corrupted_date():
 # ------------------------------------------------------
 def test_update_test():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     test = repo.add_test(sample_test())
 
@@ -275,7 +275,7 @@ def test_update_test():
 
     repo.update_test(test)
 
-    row = conn.execute("SELECT * FROM refraction_tests WHERE id=?", (test.id,)).fetchone()
+    row = conn.execute("SELECT * FROM glasses_tests WHERE id=?", (test.id,)).fetchone()
 
     assert row["examiner"] == "Dr. Updated"
     assert row["r_sphere"] == -2.00
@@ -286,10 +286,10 @@ def test_update_test():
 # ------------------------------------------------------
 def test_delete_test():
     conn = setup_in_memory_db()
-    repo = RefractionRepo(conn)
+    repo = GlassesRepo(conn)
 
     inserted = repo.add_test(sample_test())
     repo.delete_test(inserted.id)
 
-    row = conn.execute("SELECT * FROM refraction_tests WHERE id=?", (inserted.id,)).fetchone()
+    row = conn.execute("SELECT * FROM glasses_tests WHERE id=?", (inserted.id,)).fetchone()
     assert row is None

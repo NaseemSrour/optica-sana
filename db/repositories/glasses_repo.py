@@ -1,12 +1,12 @@
 import sqlite3
 from typing import Optional
 
-from db.models import RefractionTest
+from db.models import GlassesTest
 from db.sql_queries import *
 from db.utils import *
 
 
-class RefractionRepo:
+class GlassesRepo:
 
     def __init__(self, conn):
         self.conn = conn
@@ -14,10 +14,10 @@ class RefractionRepo:
     # -----------------------------
     # CREATE
     # -----------------------------
-    def add_test(self, test: RefractionTest):
+    def add_test(self, test: GlassesTest):
         """Receives an object, not a dict, to ensure complete objects & correct field naming."""
         # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
-        cursor = self.conn.execute(ADD_REFRACTION_TEST_QUERY, (
+        cursor = self.conn.execute(ADD_GLASSES_TEST_QUERY, (
             test.customer_id,
             datetime_to_text(test.exam_date),
             test.examiner,
@@ -34,13 +34,13 @@ class RefractionRepo:
     # -----------------------------
     # READ (single)
     # -----------------------------
-    def get_test(self, test_id: int) -> Optional[RefractionTest]:
+    def get_test(self, test_id: int) -> Optional[GlassesTest]:
         row = self.conn.execute("""
-            SELECT * FROM refraction_tests WHERE id = ?
+            SELECT * FROM glasses_tests WHERE id = ?
         """, (test_id,)).fetchone()
 
         if row:
-            return row_to_dataclass(row, RefractionTest)
+            return row_to_dataclass(row, GlassesTest)
         return None
 
     # -----------------------------
@@ -59,7 +59,7 @@ class RefractionRepo:
             raise ValueError("customer_id must be a positive integer")
 
         rows = self.conn.execute("""
-            SELECT * FROM refraction_tests
+            SELECT * FROM glasses_tests
             WHERE customer_id = ?
             ORDER BY exam_date DESC
         """, (customer_id,)).fetchall()
@@ -72,18 +72,18 @@ class RefractionRepo:
                     data["exam_date"] = text_to_datetime(data["exam_date"])
                 except Exception:
                     pass  # do nothing
-            results.append(RefractionTest(**data))
+            results.append(GlassesTest(**data))
 
         return results
 
     # -----------------------------
     # UPDATE
     # -----------------------------
-    def update_test(self, test: RefractionTest) -> bool:
+    def update_test(self, test: GlassesTest) -> bool:
         """Receives an object, not a dict, to ensure complete objects & correct field naming."""
         # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
 
-        self.conn.execute(UPDATE_REFRACTION_TEST_QUERY, (
+        self.conn.execute(UPDATE_GLASSES_TEST_QUERY, (
             test.customer_id,
             datetime_to_text(test.exam_date),
             test.examiner,
@@ -105,7 +105,7 @@ class RefractionRepo:
     def delete_test(self, test_id: int) -> bool:
         # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
         self.conn.execute("""
-            DELETE FROM refraction_tests WHERE id = ?
+            DELETE FROM glasses_tests WHERE id = ?
         """, (test_id,))
         self.conn.commit()
         return True

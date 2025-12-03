@@ -5,11 +5,11 @@
 from datetime import datetime
 from dataclasses import asdict
 from db.connection import get_connection
-from db.models import Customer, RefractionTest
+from db.models import Customer, GlassesTest
 from db.repositories.customer_repo import CustomerRepo
 
 from db.bootstrap import initialize_database
-from db.repositories.refraction_repo import RefractionRepo
+from db.repositories.glasses_repo import GlassesRepo
 from db.utils import date_to_str
 from services.customer_service import CustomerService
 
@@ -23,7 +23,7 @@ def build_container():
     """
     conn = get_connection()
     cus_repo = CustomerRepo(conn)
-    refr_repo = RefractionRepo(conn)
+    refr_repo = GlassesRepo(conn)
     service = CustomerService(cus_repo, refr_repo)
     return service
 
@@ -78,7 +78,7 @@ repo.delete_customer(customer.id)
 
 
 def add_ref_test_and_update_it():
-    ref_test = RefractionTest(
+    ref_test = GlassesTest(
         id=999,
         customer_id=5,
 
@@ -144,9 +144,9 @@ def add_ref_test_and_update_it():
     print("The input exam date: " + ref_test_dict["exam_date"])
     print()
 
-    # customer_service.add_refraction_test(1, ref_test_dict)
+    # customer_service.add_glasses_test(1, ref_test_dict)
 
-    updated_ref_test = RefractionTest(
+    updated_ref_test = GlassesTest(
         id=1,
         customer_id=5,
 
@@ -210,5 +210,5 @@ def add_ref_test_and_update_it():
     updated_test_dict = asdict(updated_ref_test)  # datetime objects stay objects
     updated_test_dict["exam_date"] = date_to_str(updated_test_dict["exam_date"])
 
-    # customer_service.update_refraction_test(updated_test_dict["id"], updated_test_dict)
+    # customer_service.update_glasses_test(updated_test_dict["id"], updated_test_dict)
 
