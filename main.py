@@ -5,7 +5,8 @@
 from datetime import datetime
 from dataclasses import asdict
 from db.connection import get_connection
-from db.models import Customer, GlassesTest
+from db.models import Customer, GlassesTest, ContactLensesTest
+from db.repositories.contact_lenses_repo import ContactLensesTestRepo
 from db.repositories.customer_repo import CustomerRepo
 
 from db.bootstrap import initialize_database
@@ -39,6 +40,76 @@ def main():
     else:
         print("Retrieved customer with ID 205350547: ", customer_result)
 
+    contact_lenses_test = ContactLensesTest(
+        id=1,
+        customer_id=1,
+        exam_date=datetime(2025, 12, 4),
+        examiner="Dr. Sarah Cohen",
+
+        # ===== Keratometry (Right) =====
+        r_rH=7.25,
+        r_rV=7.65,
+        r_aver=7.72,
+        r_k_cyl=0.15,
+        r_axH=90,
+        r_rT=7.90,
+        r_rN=7.85,
+        r_rI=7.88,
+        r_rS=7.87,
+
+        # ===== Keratometry (Left) =====
+        l_rH=7.75,
+        l_rV=7.60,
+        l_aver=7.67,
+        l_k_cyl=0.15,
+        l_axH=85,
+        l_rT=7.82,
+        l_rN=7.78,
+        l_rI=7.80,
+        l_rS=7.79,
+
+        # ===== Right Lens Prescription =====
+        r_lens_type="SF",
+        r_manufacturer="CooperVision",
+        r_brand="Biofinity",
+        r_diameter=14.0,
+        r_base_curve_numerator=8.6,
+        r_base_curve_denominator=None,  # Not used for spherical lenses
+        r_lens_sph=-2.50,
+        r_lens_cyl=None,
+        r_lens_axis=None,
+        r_material="Comfilcon A",
+        r_tint="Blue",
+        r_lens_va_numerator=6,
+        r_lens_va_denominator=6,
+
+        # ===== Left Lens Prescription =====
+        l_lens_type="Toric",
+        l_manufacturer="Alcon",
+        l_brand="Air Optix for Astigmatism",
+        l_diameter=14.5,
+        l_base_curve_numerator=8.7,
+        l_base_curve_denominator=None,
+        l_lens_sph=-1.75,
+        l_lens_cyl=-0.75,  # Toric → requires an axis
+        l_lens_axis=120,  # Valid 0–180
+        l_material="Lotrafilcon B",
+        l_tint="Light Blue",
+        l_lens_va_numerator=6,
+        l_lens_va_denominator=9,
+
+        notes="Patient prefers monthly lenses. Good comfort. Recheck in 6 months."
+    )
+    conn = get_connection()
+    lenses_repo = ContactLensesTestRepo(conn)
+    # lenses_repo.add_test(contact_lenses_test)
+    # lenses_repo.update_test(contact_lenses_test)
+    # print(lenses_repo.get_test(1))
+    # print(lenses_repo.list_tests_for_customer(1))
+    # print(lenses_repo.delete_test(1))
+    # print(lenses_repo.list_tests_for_customer(1))
+
+
 
 if __name__ == "__main__":
     main()
@@ -70,6 +141,7 @@ repo.delete_customer(customer.id)
 
 
 """
+
 
 # -----------------------------
 # MY OWN MANUAL TESTS:
@@ -170,12 +242,12 @@ def add_ref_test_and_update_it():
         r_high=None,  # Unused or unknown field
 
         # --- Left Eye (OS) ---
-        l_fv_numerator = 6,
-        l_fv_denominator = 12,
-        l_sphere = -1.75,
-        l_cylinder = -0.50,
-        l_axis= 10,
-        l_prism= 0.25,
+        l_fv_numerator=6,
+        l_fv_denominator=12,
+        l_sphere=-1.75,
+        l_cylinder=-0.50,
+        l_axis=10,
+        l_prism=0.25,
         l_base="OUT",
         l_va="6/7.5",
         l_add_read=1.25,
@@ -212,3 +284,63 @@ def add_ref_test_and_update_it():
 
     # customer_service.update_glasses_test(updated_test_dict["id"], updated_test_dict)
 
+    contact_lenses_test = ContactLensesTest(
+        id=None,
+        customer_id=123,
+        exam_date=datetime(2025, 12, 4),
+        examiner="Dr. Sarah Cohen",
+
+        # ===== Keratometry (Right) =====
+        r_rH=7.80,
+        r_rV=7.65,
+        r_aver=7.72,
+        r_k_cyl=0.15,
+        r_axH=90,
+        r_rT=7.90,
+        r_rN=7.85,
+        r_rI=7.88,
+        r_rS=7.87,
+
+        # ===== Keratometry (Left) =====
+        l_rH=7.75,
+        l_rV=7.60,
+        l_aver=7.67,
+        l_k_cyl=0.15,
+        l_axH=85,
+        l_rT=7.82,
+        l_rN=7.78,
+        l_rI=7.80,
+        l_rS=7.79,
+
+        # ===== Right Lens Prescription =====
+        r_lens_type="SF",
+        r_manufacturer="CooperVision",
+        r_brand="Biofinity",
+        r_diameter=14.0,
+        r_base_curve_numerator=8.6,
+        r_base_curve_denominator=None,  # Not used for spherical lenses
+        r_lens_sph=-2.50,
+        r_lens_cyl=None,
+        r_lens_axis=None,
+        r_material="Comfilcon A",
+        r_tint="Blue",
+        r_lens_va_numerator=6,
+        r_lens_va_denominator=6,
+
+        # ===== Left Lens Prescription =====
+        l_lens_type="Toric",
+        l_manufacturer="Alcon",
+        l_brand="Air Optix for Astigmatism",
+        l_diameter=14.5,
+        l_base_curve_numerator=8.7,
+        l_base_curve_denominator=None,
+        l_lens_sph=-1.75,
+        l_lens_cyl=-0.75,  # Toric → requires an axis
+        l_lens_axis=120,  # Valid 0–180
+        l_material="Lotrafilcon B",
+        l_tint="Light Blue",
+        l_lens_va_numerator=6,
+        l_lens_va_denominator=9,
+
+        notes="Patient prefers monthly lenses. Good comfort. Recheck in 6 months."
+    )

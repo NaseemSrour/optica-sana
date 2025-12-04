@@ -75,7 +75,7 @@ def create_tables(conn):
 
 
     CONTACT_LENSES_CHECK_SCHEMA_QUERY = """
-    CREATE TABLE contact_lenses_tests (
+    CREATE TABLE IF NOT EXISTS contact_lenses_tests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_id INTEGER NOT NULL,
     exam_date TEXT NOT NULL,
@@ -148,9 +148,10 @@ def create_tables(conn):
     ),
     
      FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
-);
-
-"""
+    );
+    """
+    conn.execute(CONTACT_LENSES_CHECK_SCHEMA_QUERY)
+    conn.commit()
 
 
 con = db.get_connection()
