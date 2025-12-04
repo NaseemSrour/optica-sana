@@ -68,9 +68,89 @@ def create_tables(conn):
     notes TEXT,
 
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
-    );
+    )
     """
     conn.execute(GLASSES_TEST_SCHEMA_SQL)
+    conn.commit()
+
+
+    CONTACT_LENSES_CHECK_SCHEMA_QUERY = """
+    CREATE TABLE IF NOT EXISTS contact_lenses_tests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    exam_date TEXT NOT NULL,
+    examiner TEXT,
+        -- ===== Keratometry =====
+    r_rH REAL,
+    r_rV REAL,
+    r_aver REAL,
+    r_k_cyl REAL,
+    r_axH INTEGER,
+    r_rT REAL,
+    r_rN REAL,
+    r_rI REAL,
+    r_rS REAL,
+    l_rH REAL,
+    l_rV REAL,
+    l_aver REAL,
+    l_k_cyl REAL,
+    l_axH INTEGER,
+    l_rT REAL,
+    l_rN REAL,
+    l_rI REAL,
+    l_rS REAL,
+    
+    -- ===== Contact Lens Prescription =====
+    
+    r_lens_type TEXT, -- e.g., "SF"
+    r_manufacturer TEXT,
+    r_brand TEXT,
+    r_diameter REAL,
+    r_base_curve_numerator REAL,
+    r_base_curve_denominator REAL,
+    r_lens_sph REAL,
+    r_lens_cyl REAL,
+    r_lens_axis INTEGER,
+    r_material TEXT,
+    r_tint TEXT,
+    r_lens_va_numerator INTEGER,
+    r_lens_va_denominator INTEGER,     
+
+    l_lens_type TEXT,
+    l_manufacturer TEXT,
+    l_brand TEXT,
+    l_diameter REAL,
+    l_base_curve_numerator REAL,
+    l_base_curve_denominator REAL,
+    l_lens_sph REAL,
+    l_lens_cyl REAL,
+    l_lens_axis INTEGER,
+    l_material TEXT,
+    l_tint TEXT,
+    l_lens_va_numerator INTEGER, -- "6/6", "6/9", etc.
+    l_lens_va_denominator INTEGER,
+    notes TEXT,
+
+
+    -- ===== Dependency Constraints =====
+    
+    CHECK (
+        -- Contact lens toric rules
+        (r_lens_cyl IS NULL AND r_lens_axis IS NULL) OR
+        (r_lens_cyl = 0 AND r_lens_axis IS NULL) OR
+        (r_lens_cyl <> 0 AND r_lens_axis BETWEEN 0 AND 180)
+    ),
+        CHECK (
+        -- Contact lens toric rules
+        (l_lens_cyl IS NULL AND l_lens_axis IS NULL) OR
+        (l_lens_cyl = 0 AND l_lens_axis IS NULL) OR
+        (l_lens_cyl <> 0 AND l_lens_axis BETWEEN 0 AND 180)
+    ),
+    
+     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+    );
+    """
+    conn.execute(CONTACT_LENSES_CHECK_SCHEMA_QUERY)
     conn.commit()
 
 

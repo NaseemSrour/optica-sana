@@ -1,4 +1,3 @@
-import sqlite3
 from typing import Optional
 
 from db.models import GlassesTest
