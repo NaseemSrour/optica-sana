@@ -1,16 +1,17 @@
-from db.models import Customer, GlassesTest
+from db.models import Customer, GlassesTest, ContactLensesTest
+from db.repositories.contact_lenses_repo import ContactLensesTestRepo
 from db.repositories.customer_repo import CustomerRepo
 from db.repositories.glasses_repo import GlassesRepo
-from datetime import datetime
 
 from db.utils import *
 
 
 class CustomerService:
 
-    def __init__(self, customer_repo: CustomerRepo, glasses_repo: GlassesRepo):
+    def __init__(self, customer_repo: CustomerRepo, glasses_repo: GlassesRepo, lenses_repo: ContactLensesTestRepo):
         self.cus_repo = customer_repo
         self.glasses_repo = glasses_repo
+        self.lenses_repo = lenses_repo
 
     def add_customer(self, ssn: str, first_name: str, last_name: str, phone: str = None, town: str = None, notes: str = None):
         """
@@ -87,7 +88,7 @@ class CustomerService:
             return None
 
         # Convert exam_date string → datetime
-        test_data["exam_date"] = str_to_date(test_data["exam_date"]) # convert String '27/1/2025' --> datetime object -- and in the Ref repo: --> the ISO format of that object, as a String.
+        test_data["exam_date"] = str_to_date(test_data["exam_date"]) # convert String '27/1/2025' --> datetime object -- and in the Glasses repo: --> the ISO format of that object, as a String.
 
         # Create dataclass
         ref_test = GlassesTest(**test_data)
@@ -128,6 +129,60 @@ class CustomerService:
         return self.glasses_repo.delete_test(test_id)  # DB doesn't fail if the test_id doesn't exist.
 
     # -----------------------------------------
+    # 'Contact Lenses Test' Operations
+    # -----------------------------------------
+
+    def add_contact_lenses_test(self, customer_id, test_data: dict):
+        # Adds and returns a newly-created ContactLensesTest object
+
+        # Validate fields:
+        valid = self.validate_input_contact_lenses_test(customer_id, test_data)
+        if not valid:
+            return None
+
+        # Convert exam_date string → datetime
+        test_data["exam_date"] = str_to_date(test_data["exam_date"]) # convert String '27/1/2025' --> datetime object -- and in the Lenses repo: --> the ISO format of that object, as a String.
+
+        # Create dataclass
+        lenses_test = ContactLensesTest(**test_data)
+
+        return self.lenses_repo.add_test(lenses_test)  # is passed an object, not a dict, to ensure complete and
+        # correct objects.
+
+    def get_contact_lenses_history(self, customer_id):
+        # Returns a list of ContactLensesTest
+        if not self.validate_customer_exists(customer_id):
+            return None
+
+        return self.lenses_repo.list_tests_for_customer(customer_id)
+
+    def get_latest_contact_lenses(self, customer_id) -> ContactLensesTest:
+        if not self.validate_customer_exists(customer_id):
+            return None
+
+        history = self.lenses_repo.list_tests_for_customer(customer_id)
+        return history[0] if history else None
+
+    def update_contact_lenses_test(self, customer_id, updated_test_data: dict):
+        """Returns a boolean"""
+
+        if not self.validate_customer_exists(customer_id):
+            return None
+        valid = self.validate_input_contact_lenses_test(customer_id, updated_test_data)
+        if not valid:
+            return None
+
+        # Convert exam_date string → datetime
+        updated_test_data["exam_date"] = str_to_date(updated_test_data["exam_date"])
+        # Create dataclass
+        ref_test = ContactLensesTest(**updated_test_data)  # is passed an object, not a dict, to ensure complete and correct objects.
+
+        return self.lenses_repo.update_test(ref_test)
+
+    def delete_contact_lenses_test(self, test_id: int):
+        return self.lenses_repo.delete_test(test_id)  # DB doesn't fail if the test_id doesn't exist.
+
+    # -----------------------------------------
     # Validation helper functions:
     # -----------------------------------------
 
@@ -160,6 +215,43 @@ class CustomerService:
             "r_sphere", "r_cylinder", "r_axis",
             "l_sphere", "l_cylinder", "l_axis",
             "pd", "addition"
+        ]
+
+        for field in numeric_fields:
+            if field in test_data and test_data[field] is not None:
+                if not isinstance(test_data[field], (int, float)):
+                    print(f"{field} must be numeric")
+                    return False
+        return True
+
+    def validate_input_contact_lenses_test(self, customer_id, test_data: dict):
+        # --- Step 1: Validate customer_id ---
+        if not isinstance(customer_id, int) or customer_id <= 0:
+            print("Invalid customer ID")
+            return False
+
+        # Check that customer actually exists
+        customer = self.cus_repo.get_customer(customer_id)
+        if customer is None:
+            print(f"Customer {customer_id} does not exist")
+            return False
+
+        # --- Step 2: Validate required field(s) ---
+        if "exam_date" not in test_data:
+            print("exam_date is required")
+            return False
+
+        # --- Step 3: Validate exam_date (must be YYYY-MM-DD) ---
+        try:
+            str_to_date(test_data["exam_date"])
+        except ValueError:
+            print("exam_date must be in format YYYY-MM-DD")
+            return False
+
+        # --- Step 4: Validate numeric fields (optional, if given) ---
+        numeric_fields = [
+            "r_lens_sp", "r_lens_cyl", "r_lens_axis",
+            "l_lens_sph", "l_lens_cyl", "l_lens_axis"
         ]
 
         for field in numeric_fields:

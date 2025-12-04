@@ -71,6 +71,168 @@ II) See the question marks in GlassesTest class in models.py regarding other fie
 III) See the additional fields on the right side (outside of the tables) in the contact lenses img,
 and add them accordingly to the schema, class and methods.
 
+----------------------------------------------------------------------------------------------
+
+IV) Validations regarding ContactLensesTest fields:
+
+Copied from ChatGPT:
+1. Typ (Lens Type)
+
+Examples: "SF", "MF", "TORIC" etc.
+
+Constraints:
+
+Enum
+
+If you want to be permissive: allow any short string max 10 characters
+
+If strict: predefined list (daily, monthly, toric, multifocal, etc.)
+
+✔ 2. Manufacturer / Importer
+
+No strict optical constraints.
+
+Validation:
+
+Non-empty string
+
+Unicode allowed
+
+Max length: 100
+
+✔ 3. Brand
+
+Same rules as manufacturer.
+
+✔ 4. Diam (Lens Diameter)
+
+Constraints:
+
+Decimal with 1 digit (e.g., 14.1, 13.8)
+
+Range 13.0 → 15.0 mm
+
+Step: 0.1 mm increments
+
+✔ 5. B.C. (Base Curve)
+
+This defines the curvature of the contact lens.
+
+Constraints:
+
+Decimal with 2 digits (e.g., 8.50)
+
+Range: 7.50 → 9.50 mm
+
+Step: 0.1 or 0.05 mm
+(depends on manufacturer)
+
+✔ 6. Sph (Contact Lens Sphere)
+
+Constraints:
+
+Range: –20.00 → +10.00
+
+Step: 0.25
+
+Contact lens sphere is often different from glasses sphere.
+No need to enforce relationship between the two.
+
+✔ 7. Cyl (Contact Lens Cylinder)
+
+Only present when lens is toric.
+
+Constraints:
+
+Range: –0.75 → –5.75
+
+Step increments: 0.25
+
+Dependency:
+
+If Cyl != 0 → Ax is required (0–180)
+If Cyl == 0 or missing → Ax must be null
+
+✔ 8. Ax (Axis for Toric Lens)
+
+Constraints:
+
+Integer between 0 and 180
+
+Only required if Cyl ≠ 0
+
+Must be in steps of 10 or sometimes 5
+(Manufacturers rarely offer all axis values)
+
+✔ 9. Mat. (Lens Material)
+
+Optional free-text, but common examples:
+
+Omafilcon A
+
+Etafilcon A
+
+Senofilcon A
+
+Somofilcon A
+
+Constraints:
+
+String, max 100 chars.
+
+✔ 10. Tint
+
+Optional.
+
+Common values:
+
+Clear
+
+Blue
+
+Green
+
+Handling Tint
+
+Constraints:
+
+Short string, max 30 chars
+
+Optional
+
+✔ 11. VA (Vision With Contact Lens)
+
+Format:
+
+6/6
+6/9
+6/12
+etc.
+
+
+Constraints:
+
+Format must be match regex:
+/^\d+\/\d+$/
+
+Denominator 3–200
+
+Numerator usually 6 or 20
+
+🧩 Combined Dependency Rules (Very Important)
+✔ If Cyl = 0 → Axis must be null
+✔ If Cyl ≠ 0 → Axis must be 0–180
+✔ Diameter must be compatible with B.C.
+
+Not enforceable in code (brand-dependent) — ignore.
+
+✔ Contact lens sphere must be in 0.25 steps
+
+Same for cylinder.
+
+✔ Keratometry values (rH, rV, etc.)
+
+Must be 6.0–9.5mm.
 
 
 
