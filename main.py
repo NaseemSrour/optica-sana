@@ -42,7 +42,7 @@ def main():
         print("Retrieved customer with ID 205350547: ", customer_result)
 
     contact_lenses_test = ContactLensesTest(
-        id=2,
+        id=999,
         customer_id=1,
         exam_date=datetime(2025, 12, 4),
         examiner="Dr. Sarah Cheryl",
@@ -77,8 +77,8 @@ def main():
         r_base_curve_numerator=8.6,
         r_base_curve_denominator=None,  # Not used for spherical lenses
         r_lens_sph=-2.50,
-        r_lens_cyl=None,
-        r_lens_axis=None,
+        r_lens_cyl=-0.5,
+        r_lens_axis=0,
         r_material="Comfilcon A",
         r_tint="Blue",
         r_lens_va_numerator=6,
@@ -107,7 +107,7 @@ def main():
     print("The input exam date: " + lens_test_dict["exam_date"])
     print()
 
-    history = customer_service.delete_contact_lenses_test(2)
+    history = customer_service.add_contact_lenses_test(1, lens_test_dict)
     print(history)
 
 
