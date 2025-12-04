@@ -65,7 +65,7 @@ class GlassesTest:
     l_high: Optional[float] = None  # ????????????????
 
     # --- Symptoms / Notes ---
-    pupil_distance: Optional[float] = None  # ??????????? Split into numerator/denomiator ?
+    pupil_distance: Optional[float] = None  # ??????????? Split into numerator/denomiator ? Eza aa, change it as well in the validations!
     dominant_eye: Optional[str] = None
     iop: Optional[str] = None  # ??????????? String? Or what? R/L ?
     glasses_role: Optional[str] = None  # tafked meshkfaim
@@ -97,7 +97,7 @@ class GlassesTest:
 class ContactLensesTest:
     id: Optional[int]  # AUTOINCREMENT PK
     customer_id: int
-    exam_date: datetime  # ISO date string
+    exam_date: datetime  # ISO date string # When FETCHED from DB, it is a String here in the ContactLensesTest object!
     examiner: Optional[str]
 
     # ===== Keratometry =====

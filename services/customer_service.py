@@ -2,7 +2,6 @@ from db.models import Customer, GlassesTest, ContactLensesTest
 from db.repositories.contact_lenses_repo import ContactLensesTestRepo
 from db.repositories.customer_repo import CustomerRepo
 from db.repositories.glasses_repo import GlassesRepo
-
 from db.utils import *
 
 
@@ -182,9 +181,9 @@ class CustomerService:
     def delete_contact_lenses_test(self, test_id: int):
         return self.lenses_repo.delete_test(test_id)  # DB doesn't fail if the test_id doesn't exist.
 
-    # -----------------------------------------
-    # Validation helper functions:
-    # -----------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------
+    #                                               Validation helper functions:
+    # -----------------------------------------------------------------------------------------------------------------
 
     def validate_input_glasses_test(self, customer_id, test_data: dict):
         # --- Step 1: Validate customer_id ---
@@ -212,9 +211,13 @@ class CustomerService:
 
         # --- Step 4: Validate numeric fields (optional, if given) ---
         numeric_fields = [
-            "r_sphere", "r_cylinder", "r_axis",
-            "l_sphere", "l_cylinder", "l_axis",
-            "pd", "addition"
+            "r_fv_numerator", "r_fv_denominator",
+            "r_sphere", "r_cylinder", "r_axis", "r_prism", "r_add_read", "r_add_int",
+            "r_add_bif", "r_add_mul", "r_high",
+            "l_fv_numerator", "l_fv_denominator",
+            "l_sphere", "l_cylinder", "l_axis", "l_prism", "l_add_read", "l_add_int",
+            "l_add_bif", "l_add_mul", "l_high",
+            "pupil_distance", "lenses_diameter", "segment_diameter",
         ]
 
         for field in numeric_fields:
@@ -222,6 +225,29 @@ class CustomerService:
                 if not isinstance(test_data[field], (int, float)):
                     print(f"{field} must be numeric")
                     return False
+
+        # If Right cylinder is 0 → axis must be None
+        if test_data["r_cylinder"] is None:  #  or test_data["r_cylinder"] == 0
+            if test_data["r_axis"] not in (None,):
+                raise ValueError("R_Axis must be None when cylinder is 0.00")
+        # Otherwise must be 0–180 integer
+        if not isinstance(test_data["r_axis"], int):
+            raise ValueError("R_Axis must be an integer between 0 and 180")
+
+        if not (0 <= test_data["r_axis"] <= 180):
+            raise ValueError("R_Axis must be between 0 and 180")
+
+        # Left Cylinder/Axis validation:
+        if test_data["l_cylinder"] is None:  # or test_data["l_cylinder"] == 0
+            if test_data["l_axis"] not in (None,):
+                raise ValueError("L_Axis must be None when cylinder is 0.00")
+        # Otherwise must be 0–180 integer
+        if not isinstance(test_data["l_axis"], int):
+            raise ValueError("L_Axis must be an integer between 0 and 180")
+
+        if not (0 <= test_data["l_axis"] <= 180):
+            raise ValueError("L_Axis must be between 0 and 180")
+
         return True
 
     def validate_input_contact_lenses_test(self, customer_id, test_data: dict):
@@ -259,6 +285,31 @@ class CustomerService:
                 if not isinstance(test_data[field], (int, float)):
                     print(f"{field} must be numeric")
                     return False
+
+        # --- Step 5: Validation Cylinder/Axis relationship ---
+
+        # If RIGHT cylinder is 0 → RIGHT axis must be None
+        if test_data["r_lens_cyl"] is None:  # or test_data["r_lens_cyl"] == 0
+            if test_data["r_lens_axis"] not in (None,):
+                raise ValueError("R_lens_axis must be None when cylinder is None")
+        # Otherwise must be 0–180 integer
+        if not isinstance(test_data["r_lens_axis"], int):
+            raise ValueError("R_lens_axis must be an integer between 0 and 180")
+
+        if not (0 <= test_data["r_lens_axis"] <= 180):
+            raise ValueError("R_lens_Axis must be between 0 and 180")
+
+        # If LEFT cylinder is 0 → LEFT axis must be None:
+        if test_data["l_lens_cyl"] is None:  # or test_data["l_lens_cyl"] == 0
+            if test_data["l_lens_axis"] not in (None,):
+                raise ValueError("L_lens_Axis must be None when cylinder is 0.00")
+        # Otherwise must be 0–180 integer
+        if not isinstance(test_data["l_lens_axis"], int):
+            raise ValueError("L_lens_Axis must be an integer between 0 and 180")
+
+        if not (0 <= test_data["l_lens_axis"] <= 180):
+            raise ValueError("L_lens_Axis must be between 0 and 180")
+
         return True
 
     def validate_customer_exists(self, customer_id):
