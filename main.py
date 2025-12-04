@@ -107,9 +107,12 @@ def main():
     print("The input exam date: " + lens_test_dict["exam_date"])
     print()
 
+
     history = customer_service.get_latest_contact_lenses(1)
     print(type(history.exam_date))
     print("Last lenses exam date is: " + date_to_str(text_to_datetime(history.exam_date)))
+
+    history = customer_service.add_contact_lenses_test(1, lens_test_dict)
     print(history)
 
 

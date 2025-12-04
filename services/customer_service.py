@@ -288,6 +288,7 @@ class CustomerService:
 
         # --- Step 5: Validation Cylinder/Axis relationship ---
 
+
         # If RIGHT cylinder is 0 → RIGHT axis must be None
         if test_data["r_lens_cyl"] is None:  # or test_data["r_lens_cyl"] == 0
             if test_data["r_lens_axis"] not in (None,):
