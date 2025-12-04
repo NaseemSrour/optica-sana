@@ -1,4 +1,4 @@
-Glasses Check constraints & validations:
+I) Glasses Check constraints & validations:
 
 1. FV:
 	numerator/denominator: numerator - integer, values[6, 20]
@@ -40,7 +40,7 @@ Glasses Check constraints & validations:
 	IF prism == 0 OR null THEN base MUST be null
 
 
-7. VA: ?????????
+7. VA: ?????????  numerator and denominator are Integers? Update answer in all the tables!
 
 8. ADDITIONS:
 	Read, Int. (intermediate), Bif. (bifocal), Mul. (multifocal):
@@ -63,6 +63,13 @@ Glasses Check constraints & validations:
 	
 
 
+
+----------------------------------------------------------------------------------------------
+II) See the question marks in GlassesTest class in models.py regarding other fields
+
+----------------------------------------------------------------------------------------------
+III) See the additional fields on the right side (outside of the tables) in the contact lenses img,
+and add them accordingly to the schema, class and methods.
 
 
 
