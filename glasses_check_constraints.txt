@@ -239,6 +239,12 @@ Must be 6.0–9.5mm.
 
 V) User additional fields.
 
+----------------------------------------------------------------------------------------------
+VI) What's the difference between:
+	1. Glasses Card vs. Glasses Window (in the menu)
+	2. Glasses check vs. refraction test?
+	3. What else, besides Glasses_check and Contact_Lenses_Test do you need from the menu?
+
 
 
 
