@@ -11,6 +11,7 @@ class Customer:
     lname: str
     phone: str
     town: str
+    ########## Add the other fields as needed ##########
     notes: str
 
     @staticmethod
@@ -68,13 +69,18 @@ class GlassesTest:
     pupil_distance: Optional[float] = None  # ??????????? Split into numerator/denomiator ? Eza aa, change it as well in the validations!
     dominant_eye: Optional[str] = None
     iop: Optional[str] = None  # ??????????? String? Or what? R/L ?
-    glasses_role: Optional[str] = None  # tafked meshkfaim
+    # r_iop, l_iop: decimal
+    glasses_role: Optional[str] = None  # tafked meshkfaim, drop-down list of: [merhak, kre2aa, benayem, opti-shemesh, multifocal, bifocal]
     lenses_material: Optional[str] = None
-    lenses_diameter: Optional[float] = None  # ???????????????? something / something ????
+    lenses_diameter: Optional[float] = None  # ???????????????? something / something ????  | diameter 1, diameter 2
+    lesnes_diameter_decentration_horizontal: Optional[float] = None
+    lesnes_diameter_decentration_vertical: Optional[float] = None
+
     segment_diameter: Optional[float] = None
     lenses_manufacturer: Optional[str] = None
     lenses_color: Optional[str] = None
-    ######### V? H?   "Dest"? In the middle of the picture
+    lenses_coated: Optional[str] = None
+
     catalog_num: Optional[str] = None
     frame_manufacturer: Optional[str] = None
     frame_supplier: Optional[str] = None
@@ -103,9 +109,9 @@ class ContactLensesTest:
     # ===== Keratometry =====
     r_rH: Optional[float]
     r_rV: Optional[float]
-    r_aver: Optional[float]
-    r_k_cyl: Optional[float]
-    r_axH: Optional[int]
+    r_aver: Optional[float]  # avg of (r_rH and r_rV)
+    r_k_cyl: Optional[float] # elha nos7a, mnjebha b3den
+    r_axH: Optional[int] # independent of cylinder
     r_rT: Optional[float]
     r_rN: Optional[float]
     r_rI: Optional[float]
@@ -113,9 +119,9 @@ class ContactLensesTest:
 
     l_rH: Optional[float]
     l_rV: Optional[float]
-    l_aver: Optional[float]
+    l_aver: Optional[float] # avg of (l_rH and l_rV)
     l_k_cyl: Optional[float]
-    l_axH: Optional[int]
+    l_axH: Optional[int] # independent of cylinder
     l_rT: Optional[float]
     l_rN: Optional[float]
     l_rI: Optional[float]
@@ -158,4 +164,3 @@ class ContactLensesTest:
         if row is None:
             return None
         return ContactLensesTest(**dict(row))
-
