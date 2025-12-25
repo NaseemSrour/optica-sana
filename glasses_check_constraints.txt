@@ -1,18 +1,22 @@
 I) Glasses Check constraints & validations:
 
 1. FV:
-	numerator/denominator: numerator - integer, values[6, 20]
+	numerator/denominator: numerator - integer, values[6]
 			       denominator: integer, values[3, 200]
+	* Only denominator: integer or string ('FC')
+	* Allow null
 
 2. Sph. (Sphere):
-	decimal, values[-20.00, 20.00] (most prescriptions -12 to 8)
-		with steps in 0.25
+	decimal (float), with steps in 0.25
 		(e3ni: (value * 100) % 25 == 0)
+	Hit 'P' to input 'Plano' when no value.
+	
 
 3. Cyl. (Cylindrical Power):
-	Decimal in steps of 0.25.
-	values [-6, 6]
-	If values is 0, or "-" (null) treat as no astigmatism.
+	Decimal, in steps of 0.25.
+	
+	Allow null: if values is 0, or "-" (null) treat as no astigmatism.
+	
 
 4. Ax. (Axis):
 	Required ONLY IF Cyl. != 0
@@ -24,41 +28,38 @@ I) Glasses Check constraints & validations:
 	IF cyl == 0 THEN axis MUST be NULL / empty / dot
 
 5. Prism:
-	Optional
-	Decimal, values [0, 10]
-	Steps of 0.25
+	Optional (Allow null)
+	Decimal
+	Steps of 0.5
 	If prism is null --> Base must be null/empty as well.
 
 
 6. Base:
 	String
-	Value ∈ {"BU", "BD", "BI", "BO"} (drop-down list?)
+	Value ∈ {"BU", "BD", "BI", "BO"} (drop-down list?) (Type first letter, the rst filled automatically).
 	Required only if Prism > 0
 	Can Base be some value while Prism = 0/null ???
 
 	IF prism > 0 THEN base MUST be in {BU, BD, BI, BO}
-	IF prism == 0 OR null THEN base MUST be null
+	IF prism == null THEN base MUST be null
 
 
 7. VA: ?????????  numerator and denominator are Integers? Update answer in all the tables!
+	* Only denominators: r_va, l_va, both_va
+	
 
 8. ADDITIONS:
 	Read, Int. (intermediate), Bif. (bifocal), Mul. (multifocal):
 	Decimal, steps of 0.25.
-	Values[0.50, 3.50] (only positive)
-
-	And usually, but not ncesessarily:
-	IF age < ~40 THEN Add. fields should be NULL
 	
-	Usually only one of Read / Bifocal / Multifocal is used
-	But a user may enter multiple; not strictly invalid.
 
-9. High: ?????? nfs el Additions above ???
+9. High: - irrelevant to Additions.
+	Decimal
 
 10. PD (Pupillary Distance):
-	Decimal, values [50, 75]mm.
-	Better to split as 2 values:
-	PD_near, PD_distance
+	Decimal
+	r_pd, l_pd, distance_pd (sum of r_pd + l_pd), near_pd
+	distance_pd is sum of r_pd and l_pd, but only when they exist; meaning it can be only distance_pd value with no r_pd & l_pd.
 
 	
 
@@ -244,7 +245,6 @@ VI) What's the difference between:
 	1. Glasses Card vs. Glasses Window (in the menu)
 	2. Glasses check vs. refraction test?
 	3. What else, besides Glasses_check and Contact_Lenses_Test do you need from the menu?
-
 
 
 
