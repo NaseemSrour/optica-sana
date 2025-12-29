@@ -6,7 +6,7 @@ from typing import Optional
 @dataclass
 class Customer:
     id: int
-    ssn: str
+    ssn: int
     fname: str
     lname: str
     phone: str
@@ -55,7 +55,7 @@ class GlassesTest:
 
     # --- Left Eye (OS) values ---
     l_fv: Optional[str] = None
-    l_sphere: Optional[float] = None
+    l_sphere: Optional[str] = None
     l_cylinder: Optional[float] = None
     l_axis: Optional[int] = None
     l_prism: Optional[float] = None

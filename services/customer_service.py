@@ -211,13 +211,11 @@ class CustomerService:
 
         # --- Step 4: Validate numeric fields (optional, if given) ---
         numeric_fields = [
-            "r_fv_numerator", "r_fv_denominator",
-            "r_sphere", "r_cylinder", "r_axis", "r_prism", "r_add_read", "r_add_int",
+            "r_cylinder", "r_axis", "r_prism", "r_add_read", "r_add_int",
             "r_add_bif", "r_add_mul", "r_high",
-            "l_fv_numerator", "l_fv_denominator",
-            "l_sphere", "l_cylinder", "l_axis", "l_prism", "l_add_read", "l_add_int",
+            "l_cylinder", "l_axis", "l_prism", "l_add_read", "l_add_int",
             "l_add_bif", "l_add_mul", "l_high",
-            "pupil_distance", "lenses_diameter", "segment_diameter",
+            "lenses_diameter_1", "lenses_diameter_2", "segment_diameter",
         ]
 
         for field in numeric_fields:

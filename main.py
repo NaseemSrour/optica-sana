@@ -37,10 +37,86 @@ def main():
     # Example usage:
     customer_result = customer_service.get_customer_by_ssn("205350457")
     if customer_result is None:
-        print("No customer found with ID: 205350457")
+        print("No customer found with SSN: 205350457")
     else:
-        print("Retrieved customer with ID 205350547: ", customer_result)
+        print("Retrieved customer with SSN 205350547: ", customer_result)
 
+    ref_test = GlassesTest(
+        id=1,
+        customer_id=1,
+
+        # --- Exam metadata ---
+        exam_date=datetime(2025, 5, 9, 14, 30),
+        examiner="Sanaa",
+
+        # --- Right Eye (OD) ---
+        r_fv="6", # or 'FC'
+        r_sphere="-2.25", # or 'Plano'
+        r_cylinder=-1.00,
+        r_axis=170,
+        r_prism=0.5,
+        r_base="IN",
+        r_va="6/6",
+        both_va="6",
+        r_add_read=1.25,
+        r_add_int=0.75,
+        r_add_bif=1.50,
+        r_add_mul=1.25,
+        r_high=None,  # Unused or unknown field
+        r_pd=12,
+        sum_pd=12,
+        near_pd=6,
+
+        # --- Left Eye (OS) ---
+        l_fv="6",
+        l_sphere="-1.75",
+        l_cylinder=-0.50,
+        l_axis=10,
+        l_prism=0.25,
+        l_base="OUT",
+        l_va="6/7.5",
+        l_add_read=1.25,
+        l_add_int=0.75,
+        l_add_bif=1.50,
+        l_add_mul=1.25,
+        l_high=None,
+        l_pd=55,
+
+        # --- Symptoms / Notes ---
+        dominant_eye="R",
+        r_iop=6,
+        l_iop=7,
+        glasses_role="Distance",
+        lenses_material="Polycarbonate",
+        lenses_diameter_1=70.0,  # mm
+        lenses_diameter_2=40.0,  # mm
+        lenses_diameter_decentration_horizontal=1,
+        lenses_diameter_decentration_vertical=2,
+        segment_diameter=28.0,  # mm
+        lenses_manufacturer="Essilor",
+        lenses_color="Clear",
+        lenses_coated="Coated",
+        catalog_num="ESL-12345",
+
+        frame_manufacturer="Ray-Ban",
+        frame_supplier="Optica Jerusalem",
+        frame_model="RB3025 Aviator",
+        frame_size="58-14",
+        frame_bar_length="135",
+        frame_color="Silver",
+
+        diagnosis="Myopia with Astigmatism",
+        notes="Patient reports mild eye strain after long computer use."
+    )
+
+    ref_test_dict = asdict(ref_test)  # datetime objects stay objects
+    ref_test_dict["exam_date"] = date_to_str(ref_test_dict["exam_date"])
+    print("The input exam date: " + ref_test_dict["exam_date"])
+    print(ref_test_dict["frame_color"])
+
+    # customer_service.add_glasses_test(1, ref_test_dict)
+    print("Updated glasses test: " + str(customer_service.update_glasses_test(1, ref_test_dict)))
+    """
     contact_lenses_test = ContactLensesTest(
         id=999,
         customer_id=1,
@@ -114,6 +190,8 @@ def main():
 
     history = customer_service.add_contact_lenses_test(1, lens_test_dict)
     print(history)
+    """
+
 
 
 if __name__ == "__main__":
@@ -125,7 +203,7 @@ from db.connection import get_connection
 from db.repositories.customers_repo import CustomersRepo
 
 conn = get_connection()
-repo = CustomersRepo(conn)
+repo = CustomerRepo(conn)
 
 # Create
 customer = repo.add_customer("John Doe", phone="1234567")
@@ -353,6 +431,7 @@ def play_around_with_lenses_repo():
     )
 
     conn = get_connection()
+    glasses_repo = GlassesRepo()
     lenses_repo = ContactLensesTestRepo(conn)
     lenses_repo.add_test(contact_lenses_test)
     lenses_repo.update_test(contact_lenses_test)
