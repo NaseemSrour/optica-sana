@@ -1,6 +1,6 @@
 from textual.app import App, ComposeResult
-from textual.containers import Container, Vertical, Horizontal
-from textual.widgets import Static, Input, DataTable, Label
+from textual.containers import Container, Vertical, Horizontal, Grid
+from textual.widgets import Static, Input, Label
 from textual.binding import Binding
 from textual.css.query import NoMatches
 from datetime import datetime
@@ -56,7 +56,7 @@ class CustomerInfo(Static):
         self.customer_id = id_num
 
     def render(self) -> str:
-        return f"{self.customer_name:} | Phone: {self.customer_phone} | ID: {self.customer_id}"
+        return f"{self.customer_name:^30} | Phone: {self.customer_phone} | ID: {self.customer_id}"
 
 
 class ExamNavigator(Static):
@@ -75,14 +75,22 @@ class ExamNavigator(Static):
         self.refresh()
 
 
+class TableInput(Input):
+    """Custom input field for table cells"""
+
+    def __init__(self, value: str = "", field_id: str = "", **kwargs):
+        super().__init__(value=value, **kwargs)
+        self.field_id = field_id
+
+    def key_enter(self) -> None:
+        """Move to next field when Enter is pressed"""
+        self.screen.focus_next()
+
+
 class GlassesCheckWindow(Container):
     """Main Glasses Check window widget"""
 
     BINDINGS = [
-        Binding("plus,equals", "next_exam", "Next Exam", show=False),
-        Binding("minus", "prev_exam", "Previous Exam", show=False),
-        Binding("tab", "next_field", "Next Field", show=False),
-        Binding("shift+tab", "prev_field", "Previous Field", show=False),
         Binding("escape", "quit", "Quit", show=True),
     ]
 
@@ -93,7 +101,7 @@ class GlassesCheckWindow(Container):
         self.customer_id = customer_id
         self.exams = exams
         self.current_exam_index = len(exams) - 1  # Start with latest exam
-        self.focusable_fields = []
+        self.edit_mode = False  # Track if we're in edit mode
 
     def compose(self) -> ComposeResult:
         """Create child widgets"""
@@ -106,8 +114,55 @@ class GlassesCheckWindow(Container):
                 yield ExamNavigator(self.current_exam_index + 1, len(self.exams))
                 yield Label(id="exam-dates")
 
-            # Main data grid
-            yield DataTable(id="exam-table", cursor_type="none")
+            # Main data grid with headers
+            with Grid(id="exam-table"):
+                # Header row
+                yield Label("", classes="table-header")
+                yield Label("FU", classes="table-header")
+                yield Label("Sph.", classes="table-header")
+                yield Label("Cyl.", classes="table-header")
+                yield Label("Ax.", classes="table-header")
+                yield Label("Pris", classes="table-header")
+                yield Label("Base", classes="table-header")
+                yield Label("VA", classes="table-header")
+                yield Label("Read", classes="table-header")
+                yield Label("Int.", classes="table-header")
+                yield Label("Bif.", classes="table-header")
+                yield Label("Mul.", classes="table-header")
+                yield Label("High", classes="table-header")
+                yield Label("PD", classes="table-header")
+
+                # Right eye row
+                yield Label("R", classes="table-label")
+                yield TableInput(field_id="r_va", classes="table-input")
+                yield TableInput(field_id="r_sph", classes="table-input")
+                yield TableInput(field_id="r_cyl", classes="table-input")
+                yield TableInput(field_id="r_axis", classes="table-input")
+                yield TableInput(field_id="r_prism", classes="table-input")
+                yield TableInput(field_id="r_base", classes="table-input")
+                yield TableInput(field_id="r_add", classes="table-input")
+                yield TableInput(field_id="r_read", classes="table-input")
+                yield TableInput(field_id="r_int", classes="table-input")
+                yield TableInput(field_id="r_bif", classes="table-input")
+                yield TableInput(field_id="r_mul", classes="table-input")
+                yield TableInput(field_id="r_high", classes="table-input")
+                yield Label("", classes="table-label")
+
+                # Left eye row
+                yield Label("L", classes="table-label")
+                yield TableInput(field_id="l_va", classes="table-input")
+                yield TableInput(field_id="l_sph", classes="table-input")
+                yield TableInput(field_id="l_cyl", classes="table-input")
+                yield TableInput(field_id="l_axis", classes="table-input")
+                yield TableInput(field_id="l_prism", classes="table-input")
+                yield TableInput(field_id="l_base", classes="table-input")
+                yield TableInput(field_id="l_add", classes="table-input")
+                yield TableInput(field_id="l_read", classes="table-input")
+                yield TableInput(field_id="l_int", classes="table-input")
+                yield TableInput(field_id="l_bif", classes="table-input")
+                yield TableInput(field_id="l_mul", classes="table-input")
+                yield TableInput(field_id="l_high", classes="table-input")
+                yield TableInput(field_id="pd", classes="table-input")
 
             # Additional notes section
             with Vertical(id="notes-section"):
@@ -115,26 +170,7 @@ class GlassesCheckWindow(Container):
                 yield Input(placeholder="Notes...", id="notes-input")
 
     def on_mount(self) -> None:
-        """Setup the table and load initial data"""
-        table = self.query_one("#exam-table", DataTable)
-
-        # Add columns
-        table.add_column("", width=6)
-        table.add_column("FU", width=8)
-        table.add_column("Sph.", width=8)
-        table.add_column("Cyl.", width=8)
-        table.add_column("Ax.", width=6)
-        table.add_column("Pris", width=6)
-        table.add_column("Base", width=6)
-        table.add_column("VA", width=8)
-        table.add_column("Read", width=6)
-        table.add_column("Int.", width=6)
-        table.add_column("Bif.", width=6)
-        table.add_column("Mul.", width=6)
-        table.add_column("High", width=6)
-        table.add_column("PD", width=6)
-
-        # Load current exam data
+        """Load initial data"""
         self.load_exam_data()
 
     def load_exam_data(self):
@@ -143,46 +179,44 @@ class GlassesCheckWindow(Container):
             return
 
         exam = self.exams[self.current_exam_index]
-        table = self.query_one("#exam-table", DataTable)
 
-        # Clear existing rows
-        table.clear()
+        field_map = {
+            "r_va": exam.r_va or "6/24",
+            "r_sph": exam.r_sph or "-1.75",
+            "r_cyl": exam.r_cyl or "-0.50",
+            "r_axis": exam.r_axis or "180",
+            "r_prism": exam.r_prism or ".",
+            "r_base": exam.r_base or "",
+            "r_add": exam.r_add or "6/6",
+            "r_read": exam.r_read or ".",
+            "r_int": exam.r_int or ".",
+            "r_bif": exam.r_bif or ".",
+            "r_mul": exam.r_mul or "",
+            "r_high": exam.r_high or "",
+            "l_va": exam.l_va or "6/24",
+            "l_sph": exam.l_sph or "-1.75",
+            "l_cyl": exam.l_cyl or ".",
+            "l_axis": exam.l_axis or "",
+            "l_prism": exam.l_prism or ".",
+            "l_base": exam.l_base or "",
+            "l_add": exam.l_add or "6/6",
+            "l_read": exam.l_read or ".",
+            "l_int": exam.l_int or ".",
+            "l_bif": exam.l_bif or ".",
+            "l_mul": exam.l_mul or "",
+            "l_high": exam.l_high or "",
+            "pd": exam.pd or "58/",
+        }
 
-        # Add right eye row
-        table.add_row(
-            "R",
-            exam.r_va or "6/24",
-            exam.r_sph or "-1.75",
-            exam.r_cyl or "-0.50",
-            exam.r_axis or "180",
-            exam.r_prism or ".",
-            exam.r_base or "",
-            exam.r_add or "6/6",
-            exam.r_read or ".",
-            exam.r_int or ".",
-            exam.r_bif or ".",
-            exam.r_mul or "",
-            exam.r_high or "",
-            ""
-        )
-
-        # Add left eye row
-        table.add_row(
-            "L",
-            exam.l_va or "6/24",
-            exam.l_sph or "-1.75",
-            exam.l_cyl or ".",
-            exam.l_axis or "",
-            exam.l_prism or ".",
-            exam.l_base or "",
-            exam.l_add or "6/6",
-            exam.l_read or ".",
-            exam.l_int or ".",
-            exam.l_bif or ".",
-            exam.l_mul or "",
-            exam.l_high or "",
-            exam.pd or "58/"
-        )
+        for field_id, value in field_map.items():
+            try:
+                inputs = self.query(TableInput)
+                for inp in inputs:
+                    if inp.field_id == field_id:
+                        inp.value = value
+                        break
+            except NoMatches:
+                pass
 
         # Update dates
         date_label = self.query_one("#exam-dates", Label)
@@ -208,21 +242,45 @@ class GlassesCheckWindow(Container):
             self.current_exam_index -= 1
             self.load_exam_data()
 
-    def action_next_field(self):
-        """Move to next input field"""
-        # For now, focus on notes input
-        try:
-            self.query_one("#notes-input", Input).focus()
-        except NoMatches:
-            pass
+    def on_key(self, event) -> None:
+        """Handle keyboard navigation based on mode"""
+        # Check if any input field has focus
+        focused = self.screen.focused
 
-    def action_prev_field(self):
-        """Move to previous input field"""
-        pass
+        # If an input is focused, we're in edit mode
+        if isinstance(focused, (TableInput, Input)):
+            self.edit_mode = True
+            # Allow Escape to unfocus and return to navigation mode
+            if event.key == "escape":
+                self.screen.set_focus(None)
+                self.edit_mode = False
+                event.prevent_default()
+                event.stop()
+        else:
+            self.edit_mode = False
+
+        # In navigation mode, +/- navigate between exams
+        if not self.edit_mode:
+            if event.key in ("plus", "equals"):
+                self.action_next_exam()
+                event.prevent_default()
+                event.stop()
+            elif event.key == "minus":
+                self.action_prev_exam()
+                event.prevent_default()
+                event.stop()
 
 
 class GlassesCheckApp(App):
     """Main application"""
+
+    BINDINGS = [
+        Binding("tab", "focus_next", "Next Field", show=True),
+        Binding("shift+tab", "focus_previous", "Prev Field", show=True),
+        Binding("plus,equals", "app_next_exam", "Next Exam", show=True),
+        Binding("minus", "app_prev_exam", "Prev Exam", show=True),
+        Binding("escape", "quit", "Quit", show=True),
+    ]
 
     CSS = """
     Screen {
@@ -267,27 +325,52 @@ class GlassesCheckApp(App):
         text-style: bold;
     }
 
+    /* Added grid layout with borders for table */
     #exam-table {
+        grid-size: 14 3;
+        grid-gutter: 1;
         width: 100%;
         height: auto;
         background: #0000aa;
-        color: white;
         margin: 1 2;
+        padding: 1;
+        border: solid white;
     }
 
-    DataTable {
-        background: #0000aa;
-        color: white;
-    }
-
-    DataTable > .datatable--header {
+    .table-header {
+        width: 100%;
+        height: 3;
         background: #0000aa;
         color: yellow;
         text-style: bold;
+        text-align: center;
+        content-align: center middle;
+        border: solid white;
     }
 
-    DataTable > .datatable--cursor {
+    .table-label {
+        width: 100%;
+        height: 3;
+        background: #0000aa;
+        color: white;
+        text-style: bold;
+        text-align: center;
+        content-align: center middle;
+        border: solid white;
+    }
+
+    .table-input {
+        width: 100%;
+        height: 3;
+        background: #0000aa;
+        color: white;
+        text-align: center;
+        border: solid white;
+    }
+
+    .table-input:focus {
         background: #0000dd;
+        border: double yellow;
     }
 
     #notes-section {
@@ -321,7 +404,6 @@ class GlassesCheckApp(App):
     TITLE = "Glasses Check - Optics Shop CRM"
 
     def compose(self) -> ComposeResult:
-        # Sample exam data
         exams = [
             ExamData(
                 exam_date="15/07/24",
@@ -379,6 +461,14 @@ class GlassesCheckApp(App):
             customer_id="Test123",
             exams=exams
         )
+
+    def action_app_next_exam(self):
+        """Show next exam binding"""
+        pass  # Actual handling is in GlassesCheckWindow.on_key
+
+    def action_app_prev_exam(self):
+        """Show prev exam binding"""
+        pass  # Actual handling is in GlassesCheckWindow.on_key
 
 
 if __name__ == "__main__":
