@@ -20,9 +20,9 @@ class GlassesRepo:
             test.customer_id,
             datetime_to_text(test.exam_date),
             test.examiner,
-            test.r_fv_numerator, test.r_fv_denominator, test.r_sphere, test.r_cylinder, test.r_axis, test.r_prism, test.r_base, test.r_va, test.r_add_read, test.r_add_int, test.r_add_bif, test.r_add_mul, test.r_high,
-            test.l_fv_numerator, test.l_fv_denominator, test.l_sphere, test.l_cylinder, test.l_axis, test.l_prism, test.l_base, test.l_va, test.l_add_read, test.l_add_int, test.l_add_bif, test.l_add_mul, test.l_high,
-            test.pupil_distance, test.dominant_eye, test.iop, test.glasses_role, test.lenses_material, test.lenses_diameter, test.segment_diameter, test.lenses_manufacturer, test.lenses_color, test.catalog_num, test.frame_manufacturer, test.frame_supplier, test.frame_model, test.frame_size, test.frame_bar_length, test.frame_color,
+            test.r_fv, test.r_sphere, test.r_cylinder, test.r_axis, test.r_prism, test.r_base, test.r_va, test.both_va, test.r_add_read, test.r_add_int, test.r_add_bif, test.r_add_mul, test.r_high, test.r_pd, test.sum_pd, test.near_pd,
+            test.l_fv, test.l_sphere, test.l_cylinder, test.l_axis, test.l_prism, test.l_base, test.l_va, test.l_add_read, test.l_add_int, test.l_add_bif, test.l_add_mul, test.l_high, test.l_pd,
+            test.dominant_eye, test.r_iop, test.l_iop, test.glasses_role, test.lenses_material, test.lenses_diameter_1, test.lenses_diameter_2, test.lenses_diameter_decentration_horizontal, test.lenses_diameter_decentration_vertical, test.segment_diameter, test.lenses_manufacturer, test.lenses_color, test.lenses_coated, test.catalog_num, test.frame_manufacturer, test.frame_supplier, test.frame_model, test.frame_size, test.frame_bar_length, test.frame_color,
             test.diagnosis, test.notes
         ))
 
@@ -86,11 +86,11 @@ class GlassesRepo:
             test.customer_id,
             datetime_to_text(test.exam_date),
             test.examiner,
-            test.r_fv_numerator, test.r_fv_denominator, test.r_sphere, test.r_cylinder, test.r_axis, test.r_prism,
-            test.r_base, test.r_va, test.r_add_read, test.r_add_int, test.r_add_bif, test.r_add_mul, test.r_high,
-            test.l_fv_numerator, test.l_fv_denominator, test.l_sphere, test.l_cylinder, test.l_axis, test.l_prism,
-            test.l_base, test.l_va, test.l_add_read, test.l_add_int, test.l_add_bif, test.l_add_mul, test.l_high,
-            test.pupil_distance, test.dominant_eye, test.iop, test.glasses_role, test.lenses_material, test.lenses_diameter, test.segment_diameter, test.lenses_manufacturer, test.lenses_color, test.catalog_num, test.frame_manufacturer, test.frame_supplier, test.frame_model, test.frame_size, test.frame_bar_length, test.frame_color,
+            test.r_fv, test.r_sphere, test.r_cylinder, test.r_axis, test.r_prism,
+            test.r_base, test.r_va, test.both_va, test.r_add_read, test.r_add_int, test.r_add_bif, test.r_add_mul, test.r_high, test.r_pd, test.sum_pd, test.near_pd,
+            test.l_fv, test.l_sphere, test.l_cylinder, test.l_axis, test.l_prism,
+            test.l_base, test.l_va, test.l_add_read, test.l_add_int, test.l_add_bif, test.l_add_mul, test.l_high, test.l_pd,
+            test.dominant_eye, test.r_iop, test.l_iop, test.glasses_role, test.lenses_material, test.lenses_diameter_1, test.lenses_diameter_2, test.lenses_diameter_decentration_horizontal, test.lenses_diameter_decentration_vertical, test.segment_diameter, test.lenses_manufacturer, test.lenses_color, test.lenses_coated, test.catalog_num, test.frame_manufacturer, test.frame_supplier, test.frame_model, test.frame_size, test.frame_bar_length, test.frame_color,
             test.diagnosis, test.notes,
             test.id
         ))

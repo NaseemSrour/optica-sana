@@ -6,7 +6,7 @@ from typing import Optional
 @dataclass
 class Customer:
     id: int
-    ssn: str
+    ssn: int
     fname: str
     lname: str
     phone: str
@@ -35,25 +35,27 @@ class GlassesTest:
     examiner: Optional[str] = None  # Who performed the glasses test
 
     # --- Right Eye (OD) values ---
-    r_fv_numerator: Optional[int] = None
-    r_fv_denominator: Optional[int] = None
-    r_sphere: Optional[float] = None
+    r_fv: Optional[str] = None
+    r_sphere: Optional[str] = None
     r_cylinder: Optional[float] = None
     r_axis: Optional[int] = None
     r_prism: Optional[float] = None
     r_base: Optional[str] = None
     r_va: Optional[
-        str] = None  # Visual Acuity (e.g., "6/6", "20/20") ??????????????????? Split into numerator/denomiator ?
-    r_add_read: Optional[float] = None  # Presbyopia addition
+        str] = None
+    both_va: Optional[str] = None
+    r_add_read: Optional[float] = None
     r_add_int: Optional[float] = None
     r_add_bif: Optional[float] = None
     r_add_mul: Optional[float] = None
-    r_high: Optional[float] = None  # ????????????????
+    r_high: Optional[float] = None
+    r_pd: Optional[float] = None
+    sum_pd: Optional[float] = None
+    near_pd: Optional[float] = None
 
     # --- Left Eye (OS) values ---
-    l_fv_numerator: Optional[int] = None
-    l_fv_denominator: Optional[int] = None
-    l_sphere: Optional[float] = None
+    l_fv: Optional[str] = None
+    l_sphere: Optional[str] = None
     l_cylinder: Optional[float] = None
     l_axis: Optional[int] = None
     l_prism: Optional[float] = None
@@ -63,18 +65,19 @@ class GlassesTest:
     l_add_int: Optional[float] = None
     l_add_bif: Optional[float] = None
     l_add_mul: Optional[float] = None
-    l_high: Optional[float] = None  # ????????????????
+    l_high: Optional[float] = None
+    l_pd: Optional[float] = None
 
     # --- Symptoms / Notes ---
-    pupil_distance: Optional[float] = None  # ??????????? Split into numerator/denomiator ? Eza aa, change it as well in the validations!
     dominant_eye: Optional[str] = None
-    iop: Optional[str] = None  # ??????????? String? Or what? R/L ?
-    # r_iop, l_iop: decimal
+    r_iop: Optional[float] = None
+    l_iop: Optional[float] = None
     glasses_role: Optional[str] = None  # tafked meshkfaim, drop-down list of: [merhak, kre2aa, benayem, opti-shemesh, multifocal, bifocal]
     lenses_material: Optional[str] = None
-    lenses_diameter: Optional[float] = None  # ???????????????? something / something ????  | diameter 1, diameter 2
-    lesnes_diameter_decentration_horizontal: Optional[float] = None
-    lesnes_diameter_decentration_vertical: Optional[float] = None
+    lenses_diameter_1: Optional[float] = None
+    lenses_diameter_2: Optional[float] = None
+    lenses_diameter_decentration_horizontal: Optional[float] = None
+    lenses_diameter_decentration_vertical: Optional[float] = None
 
     segment_diameter: Optional[float] = None
     lenses_manufacturer: Optional[str] = None

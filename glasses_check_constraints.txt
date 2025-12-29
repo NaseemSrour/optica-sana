@@ -36,7 +36,7 @@ I) Glasses Check constraints & validations:
 
 6. Base:
 	String
-	Value ∈ {"BU", "BD", "BI", "BO"} (drop-down list?) (Type first letter, the rst filled automatically).
+	Value ∈ {"BU", "BD", "BI", "BO"} (drop-down list?) (Type first letter, the rest filled automatically).
 	Required only if Prism > 0
 	Can Base be some value while Prism = 0/null ???
 
@@ -59,7 +59,7 @@ I) Glasses Check constraints & validations:
 10. PD (Pupillary Distance):
 	Decimal
 	r_pd, l_pd, distance_pd (sum of r_pd + l_pd), near_pd
-	distance_pd is sum of r_pd and l_pd, but only when they exist; meaning it can be only distance_pd value with no r_pd & l_pd.
+	distance_pd is sum of r_pd and l_pd, but only when they exist; meaning it CAN BE only distance_pd value with no r_pd & l_pd.
 
 	
 
