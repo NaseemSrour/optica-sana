@@ -3,10 +3,31 @@ CREATE TABLE IF NOT EXISTS customers (
             ssn INTEGER NOT NULL,
             fname TEXT NOT NULL,
             lname TEXT NOT NULL,
-            phone TEXT,
+            birth_date TEXT,
+            sex TEXT,
+            tel_home TEXT,
+            tel_mobile TEXT,
+            address TEXT,
             town TEXT,
+            postal_code TEXT,
+            status TEXT,
+            org TEXT,
+            occupation TEXT,
+            hobbies TEXT,
+            referer TEXT,
+            glasses_num INTEGER,
+            lenses_num INTEGER,
+            mailing INTEGER,
             notes TEXT
 );
+
+-- ===== SEARCH INDEXES: ========
+-- CREATE INDEX idx_customers_fname_nocase
+-- ON customers (fname COLLATE NOCASE);
+
+-- CREATE INDEX idx_customers_lname_nocase
+-- ON customers (lname COLLATE NOCASE);
+
 
 CREATE TABLE IF NOT EXISTS glasses_tests (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

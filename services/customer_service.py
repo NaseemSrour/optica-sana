@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from db.models import Customer, GlassesTest, ContactLensesTest
 from db.repositories.contact_lenses_repo import ContactLensesTestRepo
 from db.repositories.customer_repo import CustomerRepo
@@ -12,23 +14,22 @@ class CustomerService:
         self.glasses_repo = glasses_repo
         self.lenses_repo = lenses_repo
 
-    def add_customer(self, ssn: str, first_name: str, last_name: str, phone: str = None, town: str = None, notes: str = None):
-        """
-        Apply validation/business logic here.
-        """
-        if not ssn:
-            raise ValueError("Must provide customer ID!")
-        if len(ssn) != 9:
-            raise ValueError("ID should be 9 digits long!")
-        if not first_name.strip() or not last_name.strip():
-            raise ValueError("First and last name are required!")
-        if not phone and (len(phone) != 10 or not phone.isdigit()):
-            raise ValueError("Invalid phone number!")
+    def add_customer(self, customer_data: dict):
+        # Adds and returns a newly-created Customer object
 
-        if len(first_name.strip()) > 50 or len(last_name.strip()) > 50 or (not town and len(town) > 50) or (not notes and len(notes) > 500):
-            raise ValueError("Values are too long!")
+        # Validate fields:
+        valid = self.validate_input_customer(customer_data)
+        if not valid:
+            return None
 
-        return self.cus_repo.add_customer(ssn, first_name.strip(), last_name.strip(), phone, town, notes)
+        # No need: as customer.birth_date is a String, not a datetime.
+        # Convert birth_date string → datetime
+        # customer_data["birth_date"] = str_to_date(customer_data["birth_date"]) # convert String '27/1/2025' --> datetime object -- and in the Glasses repo: --> the ISO format of that object, as a String.
+
+        # Create dataclass
+        new_customer = Customer(**customer_data)
+
+        return self.cus_repo.add_customer(new_customer) # is passed an object, not a dict, to ensure complete and correct objects.
 
     def search_customers_by_full_name(self, query: str):
         # Example: normalize input
@@ -59,16 +60,17 @@ class CustomerService:
         if cus_exists is None:
             raise ValueError("Customer does not exist in DB!")
         if not customer.ssn:
-            raise ValueError("Must provide customer ID!")
-        if len(customer.ssn) != 9:
+            raise ValueError("Must provide customer SSN!")
+        if len(str(customer.ssn)) != 9:
             raise ValueError("ID should be 9 digits long!")
         if not customer.fname.strip() or not customer.lname.strip():
             raise ValueError("First and last name are required!")
-        if not customer.phone and (len(customer.phone) != 10 or not customer.phone.isdigit()):
-            raise ValueError("Invalid phone number!")
 
-        if len(customer.fname.strip()) > 50 or len(customer.lname.strip()) > 50 or (not customer.town and len(customer.town) > 50) or (not customer.notes and len(customer.notes) > 500):
-            raise ValueError("Values are too long!")
+        # Validate fields:
+        valid = self.validate_input_customer(asdict(customer))
+        if not valid:
+            return None
+
         self.cus_repo.update_customer(customer)
 
     def delete_customer(self, customer_id: int):
@@ -184,6 +186,84 @@ class CustomerService:
     # -----------------------------------------------------------------------------------------------------------------
     #                                               Validation helper functions:
     # -----------------------------------------------------------------------------------------------------------------
+
+    def validate_input_customer(self, customer_data: dict):
+        """
+        Apply validation/business logic here.
+        """
+        if not customer_data["ssn"]:
+            print("Must provide customer SSN!")
+            return False
+
+        if len(str(customer_data["ssn"])) != 9:
+            print("ID should be 9 digits long!")
+            return False
+
+        if not customer_data["fname"].strip() or not customer_data["lname"].strip():
+            print("First and last name are required!")
+            return False
+
+        if customer_data["tel_mobile"] and (len(customer_data["tel_mobile"]) != 10 or not customer_data["tel_mobile"].isdigit()):
+            print("Invalid phone number!")
+            return False
+
+        if len(customer_data["fname"].strip()) > 50 or len(customer_data["lname"].strip()) > 50:
+            print("Name is too long!")
+            return False
+
+        if customer_data["town"] and len(customer_data["town"]) > 50:
+            print("Town name is too long!")
+            return False
+
+        if customer_data["notes"] and len(customer_data["notes"]) > 500:
+            print("Notes exceed maximum length of 500 characters!")
+            return False
+
+        if customer_data["glasses_num"] and not isinstance(customer_data["glasses_num"], int):
+            print("Error: Glasses number must be an integer!")
+            return False
+
+        if customer_data["lenses_num"] and not isinstance(customer_data["lenses_num"], int):
+            print("Error: Lenses number must be an integer!")
+            return False
+        if customer_data["mailing"] and not isinstance(customer_data["mailing"], int):
+            print("Error: Mailing must be an integer!")
+            return False
+
+        # Lengths checks:
+        if customer_data["birth_date"] and len(customer_data["birth_date"]) > 50:
+            print("Birth date exceed maximum length of 50 characters!")
+            return False
+        if customer_data["sex"] and len(customer_data["sex"]) > 20:
+            print("Sex exceed maximum length of 20 characters!")
+            return False
+        if customer_data["tel_home"] and len(customer_data["tel_home"]) > 15:
+            print("Tel. Home exceed maximum length of 15 characters!")
+            return False
+        if customer_data["address"] and len(customer_data["address"]) > 100:
+            print("Address exceed maximum length of 100 characters!")
+            return False
+        if customer_data["postal_code"] and len(customer_data["postal_code"]) > 20:
+            print("Postal code exceed maximum length of 20 characters!")
+            return False
+        if customer_data["status"] and len(customer_data["status"]) > 50:
+            print("Status exceed maximum length of 50 characters!")
+            return False
+        if customer_data["org"] and len(customer_data["org"]) > 50:
+            print("Org exceed maximum length of 50 characters!")
+            return False
+        if customer_data["occupation"] and len(customer_data["occupation"]) > 50:
+            print("Occupation exceed maximum length of 50 characters!")
+            return False
+        if customer_data["hobbies"] and len(customer_data["hobbies"]) > 50:
+            print("Hobbies exceed maximum length of 50 characters!")
+            return False
+        if customer_data["referer"] and len(customer_data["referer"]) > 50:
+            print("Referer exceed maximum length of 50 characters!")
+            return False
+
+        return True
+
 
     def validate_input_glasses_test(self, customer_id, test_data: dict):
         # --- Step 1: Validate customer_id ---

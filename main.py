@@ -53,6 +53,52 @@ from db.repositories.customers_repo import CustomersRepo
 conn = get_connection()
 repo = CustomerRepo(conn)
 
+customer_dict = {
+    "ssn": 987654321,
+    "fname": "Jane",
+    "lname": "Smith",
+    "birth_date": "1992-11-20",
+    "sex": "Female",
+    "tel_home": "555-0199",
+    "tel_mobile": "555-4321",
+    "address": "456 Oak St",
+    "town": "Shelbyville",
+    "postal_code": "62705",
+    "status": "Lead",
+    "org": "School District",
+    "occupation": "Teacher",
+    "hobbies": "Reading",
+    "referer": "Referral",
+    "glasses_num": 0,
+    "lenses_num": 1,
+    "mailing": 0,
+    "notes": "No allergies."
+}
+
+customer_obj = Customer(
+    id=102,
+    ssn=987654321,
+    fname="Jane",
+    lname="Smith",
+    birth_date="1992-11-20",
+    sex="Female",
+    tel_home="555-0199",
+    tel_mobile="555-4321",
+    address="456 Oak Street",
+    town="Shelbyville",
+    postal_code="62705",
+    status="Lead",
+    org="N/A",
+    occupation="Teacher",
+    hobbies="Reading",
+    referer="Walk-in",
+    glasses_num=0,
+    lenses_num=1,
+    mailing=0,
+    notes="No known allergies."
+)
+
+
 # Create
 customer = repo.add_customer("John Doe", phone="1234567")
 print(customer)

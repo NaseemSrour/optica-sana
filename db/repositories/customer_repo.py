@@ -1,6 +1,7 @@
 from typing import List
 
 from db.models import Customer
+from db.sql_queries import ADD_NEW_CUSTOMER_QUERY
 from db.utils import dict_from_row, row_to_dataclass
 
 
@@ -12,22 +13,15 @@ class CustomerRepo:
     # -----------------------------
     # CREATE
     # -----------------------------
-    def add_customer(self, ssn, fname, lname, phone=None, town=None, notes=None) -> Customer:
-        cursor = self.conn.execute("""
-            INSERT INTO customers (ssn, fname, lname, phone, town, notes)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (ssn, fname, lname, phone, town, notes))
+    def add_customer(self, new_customer: Customer) -> Customer:
+        """Receives an object, not a dict, to ensure complete objects & correct field naming."""
+        # convenience wrapper that internally creates a cursor, runs the query, and returns that cursor.
+
+        cursor = self.conn.execute(ADD_NEW_CUSTOMER_QUERY, (new_customer.ssn, new_customer.fname, new_customer.lname, new_customer.birth_date, new_customer.sex, new_customer.tel_home, new_customer.tel_mobile, new_customer.address, new_customer.town, new_customer.postal_code, new_customer.status, new_customer.org, new_customer.occupation, new_customer.hobbies, new_customer.referer, new_customer.glasses_num, new_customer.lenses_num, new_customer.mailing, new_customer.notes))
         self.conn.commit()
 
-        return Customer(
-            id=cursor.lastrowid,
-            ssn=ssn,
-            fname=fname,
-            lname=lname,
-            phone=phone,
-            town=town,
-            notes=notes
-        )
+        new_customer.id = cursor.lastrowid
+        return new_customer
 
     # -----------------------------
     # READ (single)
@@ -91,9 +85,9 @@ class CustomerRepo:
     def update_customer(self, customer: Customer) -> bool:
         self.conn.execute("""
             UPDATE customers
-            SET ssn = ?, fname = ?, lname = ?, phone = ?, town = ?, notes = ?
+            SET ssn = ?, fname = ?, lname = ?, birth_date = ?, sex = ?, tel_home = ?, tel_mobile = ?, address = ?, town = ?, postal_code = ?, status = ?, org = ?, occupation = ?, hobbies = ?, referer = ?, glasses_num = ?, lenses_num = ?, mailing = ?, notes = ?
             WHERE id = ?
-        """, (customer.ssn, customer.fname, customer.lname, customer.phone, customer.town, customer.notes, customer.id))
+        """, (customer.ssn, customer.fname, customer.lname, customer.birth_date, customer.sex, customer.tel_home, customer.tel_mobile, customer.address, customer.town, customer.postal_code, customer.status, customer.org, customer.occupation, customer.hobbies, customer.referer, customer.glasses_num, customer.lenses_num, customer.mailing, customer.notes, customer.id))
 
         self.conn.commit()
         return True

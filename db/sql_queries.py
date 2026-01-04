@@ -1,3 +1,8 @@
+ADD_NEW_CUSTOMER_QUERY = """
+            INSERT INTO customers (ssn, fname, lname, birth_date, sex, tel_home, tel_mobile, address, town, postal_code, status, org, occupation, hobbies, referer, glasses_num, lenses_num, mailing, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+"""
+
 ADD_GLASSES_TEST_QUERY = """            INSERT INTO glasses_tests (
                 customer_id, exam_date, examiner,
                 r_fv, r_sphere, r_cylinder, r_axis, r_prism, r_base, r_va, both_va, r_add_read, r_add_int, r_add_bif, r_add_mul, r_high, r_pd, sum_pd, near_pd,
