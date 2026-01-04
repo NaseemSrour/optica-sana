@@ -12,11 +12,11 @@ class CustomerRepo:
     # -----------------------------
     # CREATE
     # -----------------------------
-    def add_customer(self, ssn, fname, lname, phone=None, town=None, notes=None) -> Customer:
+    def add_customer(self, ssn, fname, lname, birth_date, sex, tel_home, tel_mobile, address, town, postal_code, status, org, occupation, hobbies, referer, glasses_num, lenses_num, mailing, notes) -> Customer:
         cursor = self.conn.execute("""
-            INSERT INTO customers (ssn, fname, lname, phone, town, notes)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (ssn, fname, lname, phone, town, notes))
+            INSERT INTO customers (ssn, fname, lname, birth_date, sex, tel_home, tel_mobile, address, town, postal_code, status, org, occupation, hobbies, referer, glasses_num, lenses_num, mailing, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (ssn, fname, lname, birth_date, sex, tel_home, tel_mobile, address, town, postal_code, status, org, occupation, hobbies, referer, glasses_num, lenses_num, mailing, notes))
         self.conn.commit()
 
         return Customer(
@@ -24,8 +24,21 @@ class CustomerRepo:
             ssn=ssn,
             fname=fname,
             lname=lname,
-            phone=phone,
+            birth_date=birth_date,
+            sex=sex,
+            tel_home=tel_home,
+            tel_mobile=tel_mobile,
+            address=address,
             town=town,
+            postal_code=postal_code,
+            status=status,
+            org=org,
+            occupation=occupation,
+            hobbies=hobbies,
+            referer=referer,
+            glasses_num=glasses_num,
+            lenses_num=lenses_num,
+            mailing=mailing,
             notes=notes
         )
 
@@ -91,9 +104,9 @@ class CustomerRepo:
     def update_customer(self, customer: Customer) -> bool:
         self.conn.execute("""
             UPDATE customers
-            SET ssn = ?, fname = ?, lname = ?, phone = ?, town = ?, notes = ?
+            SET ssn = ?, fname = ?, lname = ?, birth_date = ?, sex = ?, tel_home = ?, tel_mobile = ?, address = ?, town = ?, postal_code = ?, status = ?, org = ?, occupation = ?, hobbies = ?, referer = ?, glasses_num = ?, lenses_num = ?, mailing = ?, notes = ?
             WHERE id = ?
-        """, (customer.ssn, customer.fname, customer.lname, customer.phone, customer.town, customer.notes, customer.id))
+        """, (customer.ssn, customer.fname, customer.lname, customer.birth_date, customer.sex, customer.tel_home, customer.tel_mobile, customer.address, customer.town, customer.postal_code, customer.status, customer.org, customer.occupation, customer.hobbies, customer.referer, customer.glasses_num, customer.lenses_num, customer.mailing, customer.notes, customer.id))
 
         self.conn.commit()
         return True

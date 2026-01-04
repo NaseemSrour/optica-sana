@@ -9,9 +9,21 @@ class Customer:
     ssn: int
     fname: str
     lname: str
-    phone: str
+    birth_date: str
+    sex: str
+    tel_home: str
+    tel_mobile: str
+    address: str
     town: str
-    ########## Add the other fields as needed ##########
+    postal_code: str
+    status: str
+    org: str
+    occupation: str
+    hobbies: str
+    referer: str
+    glasses_num: int
+    lenses_num: int
+    mailing: int
     notes: str
 
     @staticmethod
