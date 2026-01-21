@@ -2,8 +2,12 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import uuid
 from datetime import datetime
 from dataclasses import asdict
+
+from textual.containers import VerticalScroll
+
 from db.connection import get_connection
 from db.models import Customer, GlassesTest, ContactLensesTest
 from db.repositories.contact_lenses_repo import ContactLensesTestRepo
@@ -13,6 +17,10 @@ from db.bootstrap import initialize_database
 from db.repositories.glasses_repo import GlassesRepo
 from db.utils import *
 from services.customer_service import CustomerService
+from textual.app import App
+from textual.widgets import Static, Label, Button, Input
+
+from ui.widgets.customer_search_widget import CustomerSearchWidget
 
 DB_PATH = "database.db"
 
@@ -29,21 +37,146 @@ def build_container():
     service = CustomerService(cus_repo, glasses_repo, lenses_repo)
     return service
 
+class HelloTextualApp(App):
+    CSS_PATH = "static_and_label.tcss"
+
+    def compose(self):
+        self.static = Static(
+            "I am a [red bold]Static[/red bold] widget!",
+        )
+        yield self.static  # Default behavior of Static widget expands horizontally to fill the screen
+        self.label = Label(
+            "I am a [yellow italic]Label[/yellow italic] widget!",
+        )
+        yield self.label  # Default behavior of Label is to adjust its content’s width.
+
+        yield Static(
+            "I am a [bold red]Static[/bold red] widget!",
+            )
+        yield Label(
+            "I am a [yellow italic]Label[/yellow italic] widget with an id!",
+            id="label_id",
+        )
+        yield Label(
+            "I am a [yellow italic]Label[/yellow italic] widget with a CSS class!",
+            classes="label_class",
+        )
+
+NUM_BOXES = 20
+
+class VerticalScrollApp(App):
+
+    def compose(self):
+        with VerticalScroll():
+            for i in range(NUM_BOXES):
+                yield Static(f"Static {i + 1}")
+
+class ButtonsAndInputsApp(App):
+    def compose(self): # The .compose() method defines the UI structure.
+        # Buttons
+        yield Button("Click me!")
+        yield Button("Primary!", variant="primary")
+        yield Button.success("Success!")
+        yield Button.warning("Warning!")
+        yield Button.error("Error!")
+        # Inputs
+        yield Input(placeholder="Type your text here")
+        yield Input(placeholder="Password", password=True)
+        yield Input(
+            placeholder="Type a number here",
+            type="number",
+            tooltip="Digits only please!",
+        )
+
+
+from textual.app import ComposeResult
+from textual.containers import Vertical
+from textual.widgets import Input, ListView, ListItem, Label
+from textual.widget import Widget
+from textual import events
+
+DEBOUNCE_DELAY = 0.4  # seconds
+
+
+class CustomerSearch(App):
+
+    def __init__(self, repo):
+        super().__init__()
+        self.repo = repo
+        self._search_timer = None
+
+    def compose(self) -> ComposeResult:
+        with Vertical():
+            yield Input(
+                placeholder="Search customer...",
+                id="customer-input"
+            )
+            yield ListView(id="results")
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        """Debounced input handler"""
+        if self._search_timer:
+            self._search_timer.stop()
+
+        self._search_timer = self.set_timer(
+            DEBOUNCE_DELAY,
+            lambda: self.run_search(event.value),
+        )
+
+    def run_search(self, query: str) -> None:
+        results_view = self.query_one("#results", ListView)
+        results_view.clear()
+
+        if not query.strip():
+            return
+
+        results = self.repo.search_customers_by_name_or_ssn(query)
+
+        for customer in results:
+            results_view.append(
+                ListItem(Label(customer.fname + " " + customer.lname), id="d" + str(uuid.uuid4()))
+            )
+
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        customer_id = "aaaaaaaaa"
+        customer_name = "bbbbbbbbb"
+        # show a message
+
+
+class CRMApp(App):
+    """Example CRM application"""
+
+    CSS_PATH = "ui/widgets/customer_search_widget.tcss"
+
+    def __init__(self, customer_service):
+        super().__init__()
+        self.customer_service = customer_service
+
+    def compose(self) -> ComposeResult:
+        yield CustomerSearchWidget(self.customer_service)
+"""
+    def on_customer_search_widget_customer_selected(
+            self, event: CustomerSearchWidget.CustomerSelected
+    ) -> None:
+        "Handle when a customer is selected"
+        customer = event.customer
+        # Do something with the selected customer
+        self.notify(f"Selected: {customer.fname} {customer.lname}")
+        """
+
 
 def main():
     initialize_database()  # ← Ensures DB exists before app runs
     customer_service = build_container()
+    app = CRMApp(customer_service)
+    app.run()
 
-    # Example usage:
-    customer_result = customer_service.get_customer_by_ssn("205350457")
-    if customer_result is None:
-        print("No customer found with SSN: 205350457")
-    else:
-        print("Retrieved customer with SSN 205350547: ", customer_result)
 
 
 if __name__ == "__main__":
     main()
+
+
 
 """
 # USING the Customer Repo:

@@ -1,0 +1,153 @@
+/* Main container styling */
+#search-container {
+    width: 100%;
+    height: 100%;
+    background: $surface;
+    border: solid $primary;
+    padding: 1 2;
+}
+
+/* Header styling */
+#search-header {
+    width: 100%;
+    height: auto;
+    content-align: center middle;
+    text-style: bold;
+    color: $primary;
+    background: $primary 10%;
+    padding: 1;
+    margin-bottom: 1;
+    border-bottom: solid $primary;
+}
+
+/* Search input container */
+#search-input-container {
+    width: 100%;
+    height: auto;
+    margin-bottom: 1;
+}
+
+#customer-input {
+    width: 100%;
+    border: tall $accent;
+    background: $surface-darken-1;
+    padding: 1 2;
+    color: $text; /* Ensure input text and cursor are visible */
+}
+
+#customer-input > .input--placeholder {
+    color: $text-muted;
+}
+
+#customer-input > .input--cursor {
+    background: $accent;
+    color: $text;
+}
+
+#customer-input:focus {
+    border: tall $accent-lighten-1;
+    background: $surface;
+}
+
+#customer-input:focus > .input--cursor {
+    background: $accent-lighten-2;
+}
+
+/* Results info bar */
+#results-info {
+    width: 100%;
+    height: auto;
+    padding: 0 1;
+    margin-bottom: 1;
+    background: $surface-darken-1;
+}
+
+#result-count {
+    width: auto;
+    color: $text-muted;
+    text-style: italic;
+}
+
+#search-status {
+    width: auto;
+    color: $accent;
+    margin-left: 2;
+    text-style: italic;
+}
+
+/* Results container */
+#results-container {
+    width: 100%;
+    height: 1fr;
+    border: solid $primary-darken-1;
+    background: $surface-darken-1;
+}
+
+#results-list {
+    width: 100%;
+    height: 100%;
+    background: $surface-darken-1;
+    scrollbar-gutter: stable;
+}
+
+/* Result items */
+.result-item-container {
+    width: 100%;
+    height: auto;
+    padding: 0 1;
+}
+
+.customer-name {
+    width: 1fr;
+    color: $text;
+    text-style: bold;
+}
+
+.customer-ssn {
+    width: auto;
+    color: $text-muted;
+    margin-left: 2;
+}
+
+/* List item states */
+ListItem {
+    background: $surface-darken-1;
+    padding: 1 2;
+    margin: 0 1;
+}
+
+ListItem:hover {
+    background: $primary-darken-2;
+}
+
+ListItem.-highlight {
+    background: $primary;
+    color: $text;
+}
+
+ListItem.-highlight .customer-name {
+    color: $text;
+}
+
+ListItem.-highlight .customer-ssn {
+    color: $text-muted;
+}
+
+/* Empty state */
+#empty-state {
+    display: none;
+    width: 100%;
+    height: 100%;
+    content-align: center middle;
+    color: $text-muted;
+    text-style: italic;
+}
+
+#empty-state.visible {
+    display: block;
+}
+
+/* Smooth transitions */
+ListView, ListItem {
+    transition: background 200ms;
+}

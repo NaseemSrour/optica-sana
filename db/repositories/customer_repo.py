@@ -79,6 +79,31 @@ class CustomerRepo:
         rows = cur.execute(sql, params).fetchall()
         return [row_to_dataclass(row, Customer) for row in rows]
 
+    def search_by_name_or_ssn(self, query: str) -> List[Customer]:
+        """Search by full name, partial name, or anything in-between"""
+        cur = self.conn.cursor()
+
+        words = query.strip().split()
+
+        if not words:
+            return []
+
+        conditions = []
+        params = []
+
+        for w in words:
+            like = f"%{w}%"
+            conditions.append("(fname LIKE ? OR lname LIKE ? OR ssn LIKE ?)")
+            params.extend([like, like, like])
+
+        sql = f"""
+            SELECT * FROM customers
+            WHERE {" AND ".join(conditions)}
+        """
+
+        rows = cur.execute(sql, params).fetchall()
+        return [row_to_dataclass(row, Customer) for row in rows]
+
     # -----------------------------
     # UPDATE
     # -----------------------------

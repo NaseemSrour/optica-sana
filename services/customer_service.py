@@ -35,6 +35,10 @@ class CustomerService:
         # Example: normalize input
         return self.cus_repo.search_by_name(query=query.strip())
 
+    def search_customers_by_name_or_ssn(self, query: str):
+        # Example: normalize input
+        return self.cus_repo.search_by_name_or_ssn(query=query.strip())
+
     def get_customer_by_ssn(self, customer_ssn: str):
         if not customer_ssn:
             raise ValueError("ID must be provided!")

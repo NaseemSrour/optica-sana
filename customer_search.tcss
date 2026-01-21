@@ -1,0 +1,69 @@
+/* -------- App Base -------- */
+Screen {
+    background: #0f1117;
+    color: #e6e6e6;
+}
+
+/* -------- Container -------- */
+.search-container {
+    padding: 2 4;
+}
+
+/* -------- Input -------- */
+#customer-input {
+    background: #1a1d26;
+    border: tall #2a2f3a;
+    color: #ffffff;
+    padding: 1 2;
+}
+
+#customer-input:focus {
+    border: tall #5b7cfa;
+    background: #1f2330;
+}
+
+
+/* Placeholder text */
+#customer-input > .input--placeholder {
+    color: #7a8094;
+}
+
+/* -------- Results List -------- */
+#results {
+    background: #141824;
+    border: tall #2a2f3a;
+    padding: 1;
+}
+
+/* Scrollbar */
+#results > .listview--scrollbar {
+    background: #1a1d26;
+}
+
+/* -------- List Items -------- */
+ListItem {
+    padding: 1 2;
+    background: transparent;
+}
+
+ListItem:hover {
+    background: #1e2230;
+}
+
+ListItem.--highlight {
+    background: #2b3a78;
+}
+
+/* -------- Customer Name -------- */
+.result-name {
+    color: #e6e6e6;
+}
+.empty-hint {
+    color: #7a8094;
+    padding: 1 2;
+}
+
+/* Optional subtle separator look */
+ListItem {
+    border-top: solid #23283a;
+}
