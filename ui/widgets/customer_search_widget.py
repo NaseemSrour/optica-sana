@@ -109,6 +109,7 @@ class CustomerSearchWidget(Widget):
             # Auto-highlight first result
             if len(results_view) > 0:
                 results_view.index = 0
+                results_view.focus()
 
             self.update_count(len(results))
             self.update_status("")

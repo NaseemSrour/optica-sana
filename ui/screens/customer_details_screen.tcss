@@ -1,0 +1,69 @@
+        Screen {
+            background: $primary;
+        }
+        
+        #main-container {
+            background: blue;
+            height: 100%;
+            padding: 1 2;
+        }
+        
+        #title {
+            text-align: center;
+            background: blue;
+            color: cyan;
+            text-style: bold;
+            margin-bottom: 1;
+        }
+        
+        #form-container {
+            background: blue;
+            height: auto;
+        }
+        
+        #right-column, #left-column {
+            width: 1fr;
+            background: blue;
+            padding: 0 2;
+        }
+        
+        Label {
+            background: blue;
+            color: cyan;
+            width: 100%;
+            margin-top: 1;
+        }
+        
+        Input {
+            background: blue;
+            color: yellow;
+            border: none;
+            margin-bottom: 0;
+            height: 1;
+            padding: 0 1;
+        }
+        
+        Input:focus {
+            background: cyan;
+            color: blue;
+        }
+        
+        Input.-disabled {
+            background: blue;
+            color: white;
+        }
+        
+        Header {
+            background: cyan;
+            color: blue;
+        }
+        
+        Footer {
+            background: cyan;
+            color: blue;
+        }
+        
+        Footer > .footer--key {
+            background: cyan;
+            color: blue;
+        }
