@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import '../customer_details_screen.dart';
+import 'import 'package:optica_sana/screens/customer_details_screen.dart';';
 import '../db_flutter/bootstrap.dart';
 import '../db_flutter/models.dart';
 import '../db_flutter/repositories/contact_lenses_repo.dart';

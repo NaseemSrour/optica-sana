@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:optica_sana/glasses_history_screen.dart';
+import 'package:optica_sana/screens/add_glasses_test_screen.dart';
+import 'package:optica_sana/screens/add_lenses_test_screen.dart';
+import 'package:optica_sana/screens/lenses_history_screen.dart';
+import '../flutter_services/customer_service.dart';
 
 // Data model for the Customer
 class Customer {
@@ -48,44 +53,6 @@ class Customer {
   });
 }
 
-// Placeholder for the CustomerService
-class CustomerService {
-  Future<void> updateCustomer(Customer customer) async {
-    // In a real app, this would make an API call to update the customer data.
-    print("Updating customer: ${customer.fname} ${customer.lname}");
-    // Simulate a network delay
-    await Future.delayed(const Duration(seconds: 1));
-    print("Customer updated successfully.");
-  }
-
-  Future<Customer> getCustomer(int id) async {
-    // In a real app, this would fetch customer data from an API or database.
-    // Returning a dummy customer for demonstration purposes.
-    await Future.delayed(const Duration(seconds: 1));
-    return Customer(
-      id: 1,
-      ssn: "123456789",
-      fname: "John",
-      lname: "Doe",
-      birthDate: "1990-01-15",
-      sex: "Male",
-      telHome: "555-1234",
-      telMobile: "555-5678",
-      address: "123 Main St",
-      town: "Anytown",
-      postalCode: "12345",
-      status: "Active",
-      org: "Some Org",
-      occupation: "Software Developer",
-      hobbies: "Coding, Hiking",
-      referer: "Friend",
-      notes: "Initial consultation.",
-      glassesNum: 2,
-      lensesNum: 1,
-      mailing: true,
-    );
-  }
-}
 
 class CustomerDetailsScreen extends StatefulWidget {
   final Customer customer;
@@ -192,15 +159,45 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       shortcuts: {
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyS): const SaveIntent(),
         LogicalKeySet(LogicalKeyboardKey.f2): const EditIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyG): const ViewGlassesIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyL): const ViewLensesIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.shift, LogicalKeyboardKey.keyG): const AddGlassesIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.shift, LogicalKeyboardKey.keyL): const AddLensesIntent(),
       },
       actions: {
         SaveIntent: CallbackAction<SaveIntent>(onInvoke: (intent) => _isEditing ? _saveCustomer() : null),
         EditIntent: CallbackAction<EditIntent>(onInvoke: (intent) => _toggleEditMode()),
+        ViewGlassesIntent: CallbackAction<ViewGlassesIntent>(onInvoke: (intent) => _navigateTo(GlassesHistoryScreen(customer: widget.customer, customerService: widget.customerService))),
+        ViewLensesIntent: CallbackAction<ViewLensesIntent>(onInvoke: (intent) => _navigateTo(LensesHistoryScreen(customer: widget.customer, customerService: widget.customerService))),
+        AddGlassesIntent: CallbackAction<AddGlassesIntent>(onInvoke: (intent) => _navigateTo(AddGlassesTestScreen(customer: widget.customer, customerService: widget.customerService))),
+        AddLensesIntent: CallbackAction<AddLensesIntent>(onInvoke: (intent) => _navigateTo(AddLensesTestScreen(customer: widget.customer, customerService: widget.customerService))),
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text('Customer Details${_isEditing ? " (Editing)" : ""}'),
           actions: [
+            IconButton(
+              tooltip: 'View Glasses History (Ctrl+G)',
+              icon: const Icon(Icons.visibility),
+              onPressed: () => _navigateTo(GlassesHistoryScreen(customer: widget.customer, customerService: widget.customerService)),
+            ),
+             IconButton(
+              tooltip: 'View Lenses History (Ctrl+L)',
+              icon: const Icon(Icons.contact_page),
+              onPressed: () => _navigateTo(LensesHistoryScreen(customer: widget.customer, customerService: widget.customerService)),
+            ),
+            const VerticalDivider(),
+            IconButton(
+              tooltip: 'Add New Glasses Test (Ctrl+Shift+G)',
+              icon: const Icon(Icons.add_box),
+              onPressed: () => _navigateTo(AddGlassesTestScreen(customer: widget.customer, customerService: widget.customerService)),
+            ),
+            IconButton(
+              tooltip: 'Add New Lenses Test (Ctrl+Shift+L)',
+              icon: const Icon(Icons.add_circle),
+              onPressed: () => _navigateTo(AddLensesTestScreen(customer: widget.customer, customerService: widget.customerService)),
+            ),
+            const VerticalDivider(),
             IconButton(
               tooltip: _isEditing ? 'Save (Ctrl+S)' : 'Edit (F2)',
               icon: Icon(_isEditing ? Icons.save : Icons.edit),
@@ -317,7 +314,17 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       },
     );
   }
-}
 
-class SaveIntent extends Intent {}
-class EditIntent extends Intent {}
+  void _navigateTo(Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
+  class SaveIntent extends Intent {}
+  class EditIntent extends Intent {}
+  class ViewGlassesIntent extends Intent {}
+  class ViewLensesIntent extends Intent {}
+  class AddGlassesIntent extends Intent {}
+  class AddLensesIntent extends Intent {}
