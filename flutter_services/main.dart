@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import '../customer_details_screen.dart';
 import '../db_flutter/bootstrap.dart';
 import '../db_flutter/models.dart';
@@ -10,6 +12,13 @@ import 'customer_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    // Initialize FFI for sqflite on desktop
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
   await DatabaseHelper.instance.database; // Initialize the database
   runApp(const MyApp());
 }

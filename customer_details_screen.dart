@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Data model for the Customer
 class Customer {
@@ -104,6 +105,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   bool _isEditing = false;
   final _formKey = GlobalKey<FormState>();
   late final Map<String, TextEditingController> _controllers;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -178,32 +180,92 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
   @override
   void dispose() {
     _controllers.forEach((_, controller) => controller.dispose());
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Customer Details${_isEditing ? " (Editing)" : ""}'),
-        actions: [
-          IconButton(
-            icon: Icon(_isEditing ? Icons.save : Icons.edit),
-            onPressed: _isEditing ? _saveCustomer : _toggleEditMode,
+    return FocusableActionDetector(
+      autofocus: true,
+      focusNode: _focusNode,
+      shortcuts: {
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyS): const SaveIntent(),
+        LogicalKeySet(LogicalKeyboardKey.f2): const EditIntent(),
+      },
+      actions: {
+        SaveIntent: CallbackAction<SaveIntent>(onInvoke: (intent) => _isEditing ? _saveCustomer() : null),
+        EditIntent: CallbackAction<EditIntent>(onInvoke: (intent) => _toggleEditMode()),
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Customer Details${_isEditing ? " (Editing)" : ""}'),
+          actions: [
+            IconButton(
+              tooltip: _isEditing ? 'Save (Ctrl+S)' : 'Edit (F2)',
+              icon: Icon(_isEditing ? Icons.save : Icons.edit),
+              onPressed: _isEditing ? _saveCustomer : _toggleEditMode,
+            ),
+          ],
+        ),
+        body: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildEyeDataTable(),
+                const SizedBox(height: 20),
+                _buildOtherDetailsGrid(),
+              ],
+            ),
           ),
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: _buildFormFields(),
         ),
       ),
     );
   }
 
-  List<Widget> _buildFormFields() {
+  Widget _buildEyeDataTable() {
+    // This is a placeholder. You would populate this with GlassesTest data.
+    final headers = ['Sphere', 'Cylinder', 'Axis', 'Prism', 'Base', 'V/A'];
+    final rightEyeData = ['-1.00', '-0.50', '90', '', '', '6/6'];
+    final leftEyeData = ['-1.25', '-0.75', '85', '', '', '6/7.5'];
+
+    return Table(
+      border: TableBorder.all(color: Colors.grey),
+      columnWidths: const {
+        0: FlexColumnWidth(1.5),
+      },
+      children: [
+        TableRow(
+          decoration: BoxDecoration(color: Theme.of(context).primaryColorDark),
+          children: [const Text('Eye'), ...headers].map((h) => Center(child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(h, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ))).toList(),
+        ),
+        _buildEyeDataRow('Right (OD)', rightEyeData),
+        _buildEyeDataRow('Left (OS)', leftEyeData),
+      ],
+    );
+  }
+
+  TableRow _buildEyeDataRow(String eye, List<String> data) {
+    return TableRow(
+      children: [
+        Center(child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(eye, style: const TextStyle(fontWeight: FontWeight.bold)),
+        )),
+        ...data.map((d) => Center(child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(d),
+        )))
+      ],
+    );
+  }
+
+  Widget _buildOtherDetailsGrid() {
     final fields = {
       "SSN": "ssn",
       "First Name": "fname",
@@ -223,71 +285,39 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen> {
       "Notes": "notes",
     };
 
-    return fields.entries.map((entry) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: TextFormField(
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 400,
+        childAspectRatio: 4,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: fields.length,
+      itemBuilder: (context, index) {
+        final entry = fields.entries.elementAt(index);
+        return TextFormField(
           controller: _controllers[entry.value],
           enabled: _isEditing,
           decoration: InputDecoration(
             labelText: entry.key,
             border: const OutlineInputBorder(),
+            isDense: true,
           ),
           validator: (value) {
-            if (entry.key == 'SSN' || entry.key == 'First Name' || entry.key == 'Last Name') {
+            if (['SSN', 'First Name', 'Last Name'].contains(entry.key)) {
               if (value == null || value.isEmpty) {
-                return 'Please enter a value for ${entry.key}';
+                return 'Please enter a value';
               }
             }
             return null;
           },
-        ),
-      );
-    }).toList();
-  }
-}
-
-// Main function to run the app for testing
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final customerService = CustomerService();
-
-    return MaterialApp(
-      title: 'Customer Details Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
-      ),
-      home: FutureBuilder<Customer>(
-        future: customerService.getCustomer(1),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          } else if (snapshot.hasError) {
-            return Scaffold(
-              body: Center(child: Text("Error: ${snapshot.error}")),
-            );
-          } else if (snapshot.hasData) {
-            return CustomerDetailsScreen(
-              customer: snapshot.data!,
-              customerService: customerService,
-            );
-          } else {
-            return const Scaffold(
-              body: Center(child: Text("No customer data found.")),
-            );
-          }
-        },
-      ),
+        );
+      },
     );
   }
 }
+
+class SaveIntent extends Intent {}
+class EditIntent extends Intent {}
