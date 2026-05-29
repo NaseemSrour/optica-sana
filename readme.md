@@ -37,6 +37,13 @@ project/
 
 ---
 
+## Main look'n'feel of the program (classic):
+
+![Uploading textual-motivation2.png…]()
+
+
+---
+
 ## 📚 Development Philosophy
 
 1. **Database-first foundation**  
