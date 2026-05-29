@@ -20,6 +20,13 @@ will provide read-only access to synced records.
 
 ---
 
+## Main look'n'feel of the program (classic):
+
+<img width="1429" height="877" alt="textual-motivation2" src="https://github.com/user-attachments/assets/b2326415-7260-4c18-aa33-7437b7cfba6f" />
+
+
+---
+
 ## 🛠 Project Structure
 
 project/
@@ -33,14 +40,6 @@ project/
 ├── tests/ # Unit tests for logic and database
 
 └── main.py # Entry point
-
-
----
-
-## Main look'n'feel of the program (classic):
-
-<img width="1429" height="877" alt="textual-motivation2" src="https://github.com/user-attachments/assets/b2326415-7260-4c18-aa33-7437b7cfba6f" />
-
 
 
 ---
